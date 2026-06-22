@@ -112,7 +112,7 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 
 <nav>
   <div class="logo">print<span>3D</span></div>
-  <div class="nav-links"><a href="#">Produkte</a><a href="#">Prozess</a><a href="#">Kontakt</a></div>
+  <div class="nav-links"><a href="#" onclick="openAllProds();return false">Produkte</a><a href="#" onclick="document.querySelector('.hgrid').scrollIntoView({behavior:'smooth'});return false">Prozess</a><a href="#" onclick="openKontakt();return false">Kontakt</a></div>
   <button class="cart-btn" onclick="openCart()">🛒 Warenkorb <span class="cart-count" id="cc">0</span></button>
 </nav>
 
@@ -207,6 +207,34 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
       <p>Danke für deine Bestellung. Wir melden uns bald bei dir.</p>
       <button class="bigbtn" onclick="closeCheck()" style="margin-top:1.4rem">Zurück zum Shop</button>
     </div>
+  </div>
+</div>
+
+<!-- ALLE PRODUKTE MODAL -->
+<div class="modal" id="allProdModal">
+  <div class="mbox" style="width:720px">
+    <h2>🛍️ Alle Produkte <button class="xx" onclick="closeAllProds()">×</button></h2>
+    <div class="msub">Klick auf „In den Warenkorb" um Produkte hinzuzufügen.</div>
+    <div id="allProdContent"></div>
+    <div class="mnav" style="margin-top:1.2rem">
+      <button class="bbk" onclick="closeAllProds()">Schließen</button>
+      <button class="bfwd" onclick="closeAllProds();openCart()">🛒 Warenkorb ansehen</button>
+    </div>
+  </div>
+</div>
+
+<!-- KONTAKT MODAL -->
+<div class="modal" id="kontaktModal">
+  <div class="mbox" style="width:420px;text-align:center">
+    <h2 style="display:block;text-align:center;margin-bottom:1.2rem">📬 Kontakt</h2>
+    <div style="font-size:3rem;margin-bottom:.8rem">👤</div>
+    <div style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">Matias Senn</div>
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:1.4rem">print3D – Inhaber</div>
+    <a href="mailto:matias.senn@edu.schule-wetzikon.ch" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#1a1a1a;border:1px solid var(--border);border-radius:10px;padding:.9rem 1.2rem;color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:.7rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+      ✉️ matias.senn@edu.schule-wetzikon.ch
+    </a>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem">Wir antworten in der Regel innerhalb von 24 Stunden.</div>
+    <button class="bigbtn" onclick="closeKontakt()">Schließen</button>
   </div>
 </div>
 
@@ -536,6 +564,37 @@ async function submitOrder(){
     document.getElementById('errMsg').textContent='❌ Fehler beim Senden. Bitte nochmal versuchen.';
   }
 }
+
+// ── ALL PRODUCTS & KONTAKT ────────────────────────────────────
+function openAllProds(){
+  const html=CATS.map((c,ci)=>`
+    <div style="margin-bottom:1.4rem">
+      <div style="font-size:.78rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:.6rem">${c.ic} ${c.nm}</div>
+      <div class="prd-grid">${c.prods.map((p,pi)=>`
+        <div class="prc">
+          <div class="prc-ic">${p.ic}</div>
+          <div class="prc-nm">${p.nm}</div>
+          <div class="prc-ds">${p.ds}</div>
+          <div class="prc-pr">${chf(p.pr)}</div>
+          <button class="prc-add" onclick="addRegularSilent(${ci},${pi})">+ In den Warenkorb</button>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+  document.getElementById('allProdContent').innerHTML=html;
+  document.getElementById('allProdModal').classList.add('open');
+}
+function closeAllProds(){document.getElementById('allProdModal').classList.remove('open');}
+function addRegularSilent(ci,pi){
+  const p=CATS[ci].prods[pi];
+  const ex=cart.find(i=>i.key===p.nm);
+  ex?ex.qty++:cart.push({key:p.nm,nm:p.nm,ic:p.ic,pr:p.pr,qty:1});
+  renderCart();
+  // short flash feedback on button
+  event.target.textContent='✓ Hinzugefügt!';
+  setTimeout(()=>event.target.textContent='+ In den Warenkorb',1200);
+}
+function openKontakt(){document.getElementById('kontaktModal').classList.add('open');}
+function closeKontakt(){document.getElementById('kontaktModal').classList.remove('open');}
 
 // Drag & drop
 const zone=document.getElementById('stlZone');
