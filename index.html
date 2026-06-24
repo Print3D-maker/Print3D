@@ -2,7 +2,12 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>print3D</title>
+<title>print3D – Individuelle 3D-Druckprodukte aus der Schweiz</title>
+<meta name="description" content="Einzigartige 3D-gedruckte Produkte – Deko, Gadgets, Gaming-Zubehör & personalisierte Geschenke. Lade auch deine eigene STL-Datei hoch und lass sie drucken."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Ctext x='32' y='40' font-family='Arial,sans-serif' font-size='26' font-weight='700' text-anchor='middle' fill='%2300d4ff'%3E3D%3C/text%3E%3C/svg%3E"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--bg2:#111;--bg3:#161616;--text:#f0f0f0;--muted:#888;--border:#222;--accent:#00d4ff;--accent2:#0099bb;--card:#141414;--surface:#1a1a1a;--surface2:#0a0a0a;--surface3:#0d1f24;--navbg:rgba(10,10,10,.96);--disabled-bg:#333;--disabled-text:#666}
@@ -133,6 +138,7 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
   <div class="ph"><h2>🛒 <span data-i18n="cartTitle">Warenkorb</span></h2><button class="xx" onclick="closeCart()">×</button></div>
   <div class="cb" id="cb"><div class="cempty" data-i18n="cartEmpty">Dein Warenkorb ist noch leer.</div></div>
   <div class="cf">
+    <div id="freeShipMsg" style="font-size:.78rem;color:var(--accent);margin-bottom:.7rem;text-align:center"></div>
     <div class="ct-row"><span data-i18n="cartTotal">Gesamt</span><span id="ctot">0.00 CHF</span></div>
     <button class="bigbtn" id="chkBtn" onclick="openCheck()" disabled><span data-i18n="checkoutBtn">Auschecken →</span></button>
   </div>
@@ -199,18 +205,12 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
         <div class="fg"><label data-i18n="lblCity">Ort</label><input id="chC" placeholder="Zürich"/></div>
       </div>
       <div class="fg"><label data-i18n="lblCountry">Land</label><select id="chCountry" onchange="renderOrderSummary()"></select></div>
-      <div class="stag" data-i18n="paymentLabel">Zahlung</div>
-      <div class="ci-badges"><span class="cib">VISA</span><span class="cib">MC</span><span class="cib">PayPal</span><span class="cib">AMEX</span></div>
-      <div class="fg"><label data-i18n="lblCardholder">Karteninhaber</label><input placeholder="Max Mustermann"/></div>
-      <div class="fg"><label data-i18n="lblCardnum">Kartennummer</label><input placeholder="1234 5678 9012 3456"/></div>
-      <div class="frow">
-        <div class="fg"><label data-i18n="lblExpiry">Ablauf</label><input placeholder="MM/JJ"/></div>
-        <div class="fg"><label data-i18n="lblCvv">CVV</label><input placeholder="123"/></div>
-      </div>
       <div class="stag" data-i18n="orderSummary">Bestellübersicht</div>
       <div class="osum" id="osum"></div>
-      <div id="errMsg" style="color:#f55;font-size:.8rem;margin-top:.4rem"></div>
-      <button class="bigbtn" id="payBtn" onclick="submitOrder()" style="margin-top:.9rem" data-i18n="payBtn">💳 Jetzt bezahlen & bestellen</button>
+      <div class="stag" data-i18n="paymentLabel">Zahlung</div>
+      <div class="msub" style="margin-bottom:.7rem" data-i18n="paypalHint">Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.</div>
+      <div id="paypalWrap"></div>
+      <div id="errMsg" style="color:#f55;font-size:.8rem;margin-top:.6rem"></div>
     </div>
     <div class="sbox" id="checkOk" style="display:none">
       <div class="si">✅</div>
@@ -398,6 +398,11 @@ const I18N={
   lblCvv:{de:'CVV',en:'CVV'},
   orderSummary:{de:'Bestellübersicht',en:'Order summary'},
   shipping:{de:'Versand',en:'Shipping'},
+  free:{de:'Kostenlos 🎉',en:'Free 🎉'},
+  freeShipBefore:{de:'Noch {x} bis zum kostenlosen Versand 🚚',en:'{x} more for free shipping 🚚'},
+  freeShipReached:{de:'🎉 Kostenloser Versand freigeschaltet!',en:'🎉 Free shipping unlocked!'},
+  paypalHint:{de:'Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.',en:'Click the PayPal button to verify your address and pay securely.'},
+  paypalSetupNeeded:{de:'PayPal ist noch nicht eingerichtet. Trag deine PayPal-Client-ID im Code ein (Kommentar bei PAYPAL_CLIENT_ID), dann erscheint hier der Bezahl-Button.',en:'PayPal isn\'t set up yet. Add your PayPal client ID in the code (see the PAYPAL_CLIENT_ID comment) to show the payment button here.'},
   payBtn:{de:'💳 Jetzt bezahlen & bestellen',en:'💳 Pay & order now'},
   sending:{de:'Wird gesendet...',en:'Sending...'},
   orderSentTitle:{de:'Bestellung gesendet!',en:'Order sent!'},
@@ -456,6 +461,7 @@ const I18N={
   footContact:{de:'Kontakt',en:'Contact'},
   footInsta:{de:'Instagram (folgt bald)',en:'Instagram (coming soon)'},
   errAllFields:{de:'❌ Bitte alle Felder ausfüllen.',en:'❌ Please fill in all fields.'},
+  errEmail:{de:'❌ Bitte eine gültige E-Mail-Adresse eingeben.',en:'❌ Please enter a valid email address.'},
   errSend:{de:'❌ Fehler beim Senden. Bitte nochmal versuchen.',en:'❌ Error while sending. Please try again.'},
 };
 
@@ -496,6 +502,8 @@ const MATS=[
 ];
 const BARLABELS={de:['Stärke','Hitze','Flexibel','Detail'],en:['Strength','Heat','Flex','Detail']};
 const INFILL=0.20, P100G=5;
+const FREE_SHIP_THRESHOLD=50; // ab diesem Bestellwert (CHF) ist der Versand kostenlos
+const PAYPAL_CLIENT_ID='YOUR_PAYPAL_CLIENT_ID'; // <-- hier deine echte PayPal Client-ID einfügen (developer.paypal.com → Apps & Credentials)
 
 const COUNTRIES=[
   {code:'CH',de:'Schweiz',en:'Switzerland'},
@@ -536,7 +544,7 @@ function applyLang(){
   renderCart();
   if(document.getElementById('catModal').classList.contains('open') && currentCatId) openCat(currentCatId);
   if(document.getElementById('allProdModal').classList.contains('open')) openAllProds();
-  if(document.getElementById('checkModal').classList.contains('open') && document.getElementById('checkFrm').style.display!=='none') renderOrderSummary();
+  if(document.getElementById('checkModal').classList.contains('open') && document.getElementById('checkFrm').style.display!=='none'){renderOrderSummary();renderPaypalArea();}
 }
 
 function rebuildCatCards(){
@@ -590,6 +598,10 @@ function renderCart(){
   document.getElementById('cc').textContent=cnt;
   document.getElementById('ctot').textContent=chf(tot);
   document.getElementById('chkBtn').disabled=!cart.length;
+  const fsm=document.getElementById('freeShipMsg');
+  if(!cart.length){fsm.textContent='';}
+  else if(tot>=FREE_SHIP_THRESHOLD){fsm.textContent=I18N.freeShipReached[lang];}
+  else{fsm.textContent=I18N.freeShipBefore[lang].replace('{x}',chf(FREE_SHIP_THRESHOLD-tot));}
   const el=document.getElementById('cb');
   if(!cart.length){el.innerHTML=`<div class="cempty">${I18N.cartEmpty[lang]}</div>`;return;}
   el.innerHTML=cart.map((it,idx)=>{
@@ -713,71 +725,119 @@ function addCustomToCart(){
   renderCart();closeCustom();openCart();
 }
 
-function renderOrderSummary(){
+function calcTotals(){
+  const subtotal=cart.reduce((s,i)=>s+i.pr*i.qty,0);
   const country=(document.getElementById('chCountry')||{}).value||'CH';
-  const sh = country==='CH'?4.99:6.99;
-  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0);
+  const shipping = subtotal>=FREE_SHIP_THRESHOLD ? 0 : (country==='CH'?4.99:6.99);
+  return {subtotal,shipping,total:subtotal+shipping,country};
+}
+function renderOrderSummary(){
+  const t=calcTotals();
   document.getElementById('osum').innerHTML=
     cart.map(i=>{
       const nm = i.custom? i.nm : CATS[i.catIdx].prods[i.prodIdx].nm[lang];
       return `<div class="or"><span>${i.ic} ${nm}${i.qty>1?' × '+i.qty:''}${i.mat?' ('+i.mat+')':''}</span><span>${chf(i.pr*i.qty)}</span></div>`;
     }).join('')+
-    `<div class="or"><span>${I18N.shipping[lang]}</span><span>${chf(sh)}</span></div>`+
-    `<div class="or tot"><span>${I18N.cartTotal[lang]}</span><span>${chf(tot+sh)}</span></div>`;
-  return sh;
+    `<div class="or"><span>${I18N.shipping[lang]}</span><span>${t.shipping===0?I18N.free[lang]:chf(t.shipping)}</span></div>`+
+    `<div class="or tot"><span>${I18N.cartTotal[lang]}</span><span>${chf(t.total)}</span></div>`;
+  return t.shipping;
 }
 function openCheck(){
   closeCart();
   document.getElementById('checkFrm').style.display='block';
   document.getElementById('checkOk').style.display='none';
   document.getElementById('errMsg').textContent='';
-  document.getElementById('payBtn').disabled=false;
-  document.getElementById('payBtn').textContent=I18N.payBtn[lang];
   rebuildCountrySelect();
   document.getElementById('chCountry').value='CH';
   renderOrderSummary();
+  renderPaypalArea();
   document.getElementById('checkModal').classList.add('open');
 }
 function closeCheck(){document.getElementById('checkModal').classList.remove('open');}
 
-async function submitOrder(){
-  const n=document.getElementById('chN').value.trim();
-  const e=document.getElementById('chE').value.trim();
-  const st=document.getElementById('chSt').value.trim();
-  const p=document.getElementById('chP').value.trim();
-  const c=document.getElementById('chC').value.trim();
-  const countryCode=document.getElementById('chCountry').value;
-  const countryLabel=((COUNTRIES.find(x=>x.code===countryCode)||{})[lang])||countryCode;
-  if(!n||!e||!st||!p||!c){document.getElementById('errMsg').textContent=I18N.errAllFields[lang];return;}
-  const btn=document.getElementById('payBtn');
-  btn.disabled=true;btn.textContent=I18N.sending[lang];
-  const sh=countryCode==='CH'?4.99:6.99;
-  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0)+sh;
+function getAddressFields(){
+  return {
+    n:document.getElementById('chN').value.trim(),
+    e:document.getElementById('chE').value.trim(),
+    st:document.getElementById('chSt').value.trim(),
+    p:document.getElementById('chP').value.trim(),
+    c:document.getElementById('chC').value.trim(),
+    countryCode:document.getElementById('chCountry').value
+  };
+}
+function validateAddress(){
+  const f=getAddressFields();
+  document.getElementById('errMsg').textContent='';
+  if(!f.n||!f.e||!f.st||!f.p||!f.c){document.getElementById('errMsg').textContent=I18N.errAllFields[lang];return null;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.e)){document.getElementById('errMsg').textContent=I18N.errEmail[lang];return null;}
+  return f;
+}
+
+function loadPaypalSDK(cb){
+  if(window.paypal){cb();return;}
+  if(PAYPAL_CLIENT_ID==='YOUR_PAYPAL_CLIENT_ID')return;
+  const s=document.createElement('script');
+  s.src='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CHF&components=buttons';
+  s.onload=cb;
+  document.head.appendChild(s);
+}
+function renderPaypalArea(){
+  const wrap=document.getElementById('paypalWrap');
+  if(PAYPAL_CLIENT_ID==='YOUR_PAYPAL_CLIENT_ID'){
+    wrap.innerHTML=`<div style="background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">⚠️ ${I18N.paypalSetupNeeded[lang]}</div>`;
+    return;
+  }
+  wrap.innerHTML='<div id="paypal-button-container"></div>';
+  loadPaypalSDK(initPaypal);
+}
+function initPaypal(){
+  if(!window.paypal)return;
+  document.getElementById('paypal-button-container').innerHTML='';
+  paypal.Buttons({
+    style:{color:'blue',shape:'rect',label:'pay'},
+    onClick:function(data,actions){
+      const f=validateAddress();
+      if(!f)return actions.reject();
+      return actions.resolve();
+    },
+    createOrder:function(data,actions){
+      const t=calcTotals();
+      return actions.order.create({purchase_units:[{amount:{value:t.total.toFixed(2),currency_code:'CHF'}}]});
+    },
+    onApprove:function(data,actions){
+      return actions.order.capture().then(function(){finalizeOrder(data.orderID);});
+    },
+    onError:function(){
+      document.getElementById('errMsg').textContent=I18N.errSend[lang];
+    }
+  }).render('#paypal-button-container');
+}
+
+async function finalizeOrder(paypalOrderId){
+  const f=getAddressFields();
+  const t=calcTotals();
+  const countryLabel=((COUNTRIES.find(x=>x.code===f.countryCode)||{})[lang])||f.countryCode;
   const orderTxt=cart.map(i=>{
     const nm=i.custom?i.nm:CATS[i.catIdx].prods[i.prodIdx].nm.de;
     return `${i.ic} ${nm}${i.mat?' ('+i.mat+')':''}${i.wg?' ~'+i.wg.toFixed(0)+'g':''} × ${i.qty} = ${chf(i.pr*i.qty)}`;
-  }).join('\n')+`\nVersand (${countryLabel}) = ${chf(sh)}\nGesamt = ${chf(tot)}`;
+  }).join('\n')+`\nVersand (${countryLabel}) = ${t.shipping===0?'Kostenlos':chf(t.shipping)}\nGesamt = ${chf(t.total)}\nPayPal-Order-ID = ${paypalOrderId}`;
   const fd=new FormData();
-  fd.append('_subject','🖨️ Neue print3D Bestellung von '+n);
+  fd.append('_subject','🖨️ Neue print3D Bestellung von '+f.n);
   fd.append('_captcha','false');
   fd.append('_template','table');
-  fd.append('Name',n);fd.append('Email',e);
-  fd.append('Adresse',st+', '+p+' '+c+', '+countryLabel);
+  fd.append('Name',f.n);fd.append('Email',f.e);
+  fd.append('Adresse',f.st+', '+f.p+' '+f.c+', '+countryLabel);
   fd.append('Bestellung',orderTxt);
-  fd.append('Gesamtbetrag',chf(tot));
+  fd.append('Gesamtbetrag',chf(t.total));
+  fd.append('PayPal-Order-ID',paypalOrderId);
   const cu=cart.find(i=>i.custom&&i.file);
   if(cu)fd.append('attachment',cu.file,cu.file.name);
   try{
-    const r=await fetch('https://formsubmit.co/matias.senn@edu.schule-wetzikon.ch',{method:'POST',body:fd});
-    if(r.ok||r.redirected){
-      document.getElementById('checkFrm').style.display='none';
-      document.getElementById('checkOk').style.display='block';
-      cart=[];renderCart();
-    } else throw 0;
-  }catch{
-    btn.disabled=false;btn.textContent=I18N.payBtn[lang];
-    document.getElementById('errMsg').textContent=I18N.errSend[lang];
-  }
+    await fetch('https://formsubmit.co/matias.senn@edu.schule-wetzikon.ch',{method:'POST',body:fd});
+  }catch(err){console.error('E-Mail-Versand fehlgeschlagen',err);}
+  document.getElementById('checkFrm').style.display='none';
+  document.getElementById('checkOk').style.display='block';
+  cart=[];renderCart();
 }
 
 function openAllProds(){
