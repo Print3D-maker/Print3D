@@ -5,70 +5,74 @@
 <title>print3D</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0a0a0a;--bg2:#111;--bg3:#161616;--text:#f0f0f0;--muted:#888;--border:#222;--accent:#00d4ff;--accent2:#0099bb;--card:#141414}
-body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;font-size:16px}
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#161616;--text:#f0f0f0;--muted:#888;--border:#222;--accent:#00d4ff;--accent2:#0099bb;--card:#141414;--surface:#1a1a1a;--surface2:#0a0a0a;--surface3:#0d1f24;--navbg:rgba(10,10,10,.96);--disabled-bg:#333;--disabled-text:#666}
+[data-theme="light"]{--bg:#f6f7f8;--bg2:#ffffff;--bg3:#eef0f2;--text:#14171a;--muted:#62666c;--border:#e1e3e6;--accent:#0099bb;--accent2:#007a93;--card:#ffffff;--surface:#eef0f2;--surface2:#f0f4f5;--surface3:#e3f6fa;--navbg:rgba(255,255,255,.92);--disabled-bg:#e4e4e4;--disabled-text:#9a9a9a}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;font-size:16px;transition:background .25s,color .25s}
 a{text-decoration:none;color:inherit}
-nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5%;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,10,.96);backdrop-filter:blur(12px);z-index:100}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5%;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--navbg);backdrop-filter:blur(12px);z-index:100}
 .logo{font-size:1.3rem;font-weight:700;letter-spacing:-.5px}.logo span{color:var(--accent)}
 .nav-links{display:flex;gap:2rem;font-size:.9rem;color:var(--muted)}.nav-links a:hover{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:.6rem}
+.icon-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s}.icon-btn:hover{border-color:var(--accent)}
+.lang-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0 .7rem;height:38px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700;letter-spacing:.5px;transition:border-color .2s}.lang-btn:hover{border-color:var(--accent)}
 .cart-btn{background:var(--accent);color:#000;padding:.5rem 1.2rem;border-radius:6px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:.5rem}.cart-btn:hover{background:var(--accent2)}
 .cart-count{background:#000;color:var(--accent);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200}.overlay.open{display:block}
 /* CART */
-.cart-panel{position:fixed;top:0;right:-440px;width:440px;max-width:100vw;height:100vh;background:#111;border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transition:right .3s ease}.cart-panel.open{right:0}
+.cart-panel{position:fixed;top:0;right:-440px;width:440px;max-width:100vw;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transition:right .3s ease}.cart-panel.open{right:0}
 .ph{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}.ph h2{font-size:1.05rem;font-weight:700}
 .xx{background:none;border:none;color:var(--muted);font-size:1.5rem;cursor:pointer;line-height:1}.xx:hover{color:var(--text)}
 .cb{flex:1;overflow-y:auto;padding:1rem 1.4rem}
 .cempty{text-align:center;color:var(--muted);margin-top:3rem;font-size:.9rem}
 .ci{display:flex;align-items:flex-start;gap:.9rem;padding:.9rem 0;border-bottom:1px solid var(--border)}
-.ci-ic{font-size:1.7rem;width:44px;height:44px;background:#1a1a1a;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ci-ic{font-size:1.7rem;width:44px;height:44px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ci-inf{flex:1;min-width:0}.ci-inf h4{font-size:.88rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ci-inf p{font-size:.74rem;color:var(--muted)}
 .ci-ctrl{display:flex;align-items:center;gap:.4rem;margin-top:.3rem}
-.qb{background:#1a1a1a;border:1px solid var(--border);color:var(--text);width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center}.qb:hover{border-color:var(--accent)}
+.qb{background:var(--surface);border:1px solid var(--border);color:var(--text);width:22px;height:22px;border-radius:4px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center}.qb:hover{border-color:var(--accent)}
 .qn{font-size:.82rem;min-width:16px;text-align:center}
 .rmb{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.76rem;margin-left:.3rem}.rmb:hover{color:#f55}
 .ci-pr{font-size:.88rem;font-weight:700;color:var(--accent);white-space:nowrap}
 .cf{padding:1.1rem 1.4rem;border-top:1px solid var(--border)}
 .ct-row{display:flex;justify-content:space-between;font-size:1rem;margin-bottom:.9rem}.ct-row span:last-child{font-weight:700;color:var(--accent)}
-.bigbtn{width:100%;background:var(--accent);color:#000;border:none;padding:.85rem;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s}.bigbtn:hover{background:var(--accent2)}.bigbtn:disabled{background:#333;color:#666;cursor:not-allowed}
+.bigbtn{width:100%;background:var(--accent);color:#000;border:none;padding:.85rem;border-radius:8px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .2s}.bigbtn:hover{background:var(--accent2)}.bigbtn:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
 /* MODALS */
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center;padding:1rem}.modal.open{display:flex}
-.mbox{background:#111;border:1px solid var(--border);border-radius:16px;width:640px;max-width:100%;max-height:92vh;overflow-y:auto;padding:1.8rem}
+.mbox{background:var(--bg2);border:1px solid var(--border);border-radius:16px;width:640px;max-width:100%;max-height:92vh;overflow-y:auto;padding:1.8rem}
 .mbox h2{font-size:1.15rem;font-weight:700;margin-bottom:.25rem;display:flex;justify-content:space-between;align-items:flex-start}
 .msub{color:var(--muted);font-size:.84rem;margin-bottom:1.3rem}
 .stag{font-size:.72rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin:.9rem 0 .5rem}
 .fg{margin-bottom:.75rem}.fg label{display:block;font-size:.79rem;color:var(--muted);margin-bottom:.3rem}
-.fg input,.fg textarea{width:100%;background:#1a1a1a;border:1px solid var(--border);color:var(--text);padding:.62rem .85rem;border-radius:8px;font-size:.88rem;outline:none;font-family:inherit}.fg input:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg input,.fg textarea,.fg select{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.62rem .85rem;border-radius:8px;font-size:.88rem;outline:none;font-family:inherit}.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--accent)}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
 .ci-badges{display:flex;gap:.4rem;margin-bottom:.6rem}
-.cib{background:#1a1a1a;border:1px solid var(--border);border-radius:4px;padding:.13rem .5rem;font-size:.7rem;color:var(--muted)}
-.osum{background:#0a0a0a;border-radius:8px;padding:.85rem;margin:.7rem 0}
+.cib{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:.13rem .5rem;font-size:.7rem;color:var(--muted)}
+.osum{background:var(--surface2);border-radius:8px;padding:.85rem;margin:.7rem 0}
 .or{display:flex;justify-content:space-between;padding:.2rem 0;font-size:.83rem;color:var(--muted)}.or.tot{color:var(--text);font-weight:700;border-top:1px solid var(--border);margin-top:.4rem;padding-top:.4rem}
 .mnav{display:flex;gap:.7rem;margin-top:1.1rem}
 .bbk{background:none;border:1px solid var(--border);color:var(--muted);padding:.62rem 1.2rem;border-radius:8px;cursor:pointer;font-size:.86rem}.bbk:hover{border-color:var(--accent);color:var(--text)}
-.bfwd{background:var(--accent);color:#000;border:none;padding:.62rem 1.4rem;border-radius:8px;cursor:pointer;font-size:.86rem;font-weight:700;flex:1}.bfwd:hover{background:var(--accent2)}.bfwd:disabled{background:#333;color:#666;cursor:not-allowed}
+.bfwd{background:var(--accent);color:#000;border:none;padding:.62rem 1.4rem;border-radius:8px;cursor:pointer;font-size:.86rem;font-weight:700;flex:1}.bfwd:hover{background:var(--accent2)}.bfwd:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
 .sbox{text-align:center;padding:2rem 0}.sbox .si{font-size:3.2rem;margin-bottom:.9rem}.sbox h2{margin-bottom:.4rem}.sbox p{color:var(--muted);font-size:.88rem}
 /* CAT MODAL */
 .prd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.85rem;margin-top:.8rem}
 .prc{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.95rem;transition:border-color .2s,transform .15s}.prc:hover{border-color:var(--accent);transform:translateY(-2px)}
 .prc-ic{font-size:2rem;margin-bottom:.5rem}.prc-nm{font-size:.88rem;font-weight:600;margin-bottom:.2rem}.prc-ds{font-size:.76rem;color:var(--muted);margin-bottom:.55rem}
 .prc-pr{font-size:.92rem;font-weight:700;color:var(--accent);margin-bottom:.6rem}
-.prc-add{width:100%;background:#1a1a1a;border:1px solid var(--border);color:var(--text);padding:.42rem;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .2s,border-color .2s}.prc-add:hover{background:var(--accent);color:#000;border-color:var(--accent)}
+.prc-add{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.42rem;border-radius:6px;font-size:.78rem;font-weight:600;cursor:pointer;transition:background .2s,border-color .2s}.prc-add:hover{background:var(--accent);color:#000;border-color:var(--accent)}
 /* CUSTOM ORDER */
-.stl-zone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}.stl-zone:hover,.stl-zone.drag{border-color:var(--accent);background:#0d1f24}
+.stl-zone{border:2px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;position:relative}.stl-zone:hover,.stl-zone.drag{border-color:var(--accent);background:var(--surface3)}
 .stl-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .dz-ic{font-size:2rem;margin-bottom:.5rem}.stl-zone h3{font-size:.9rem;font-weight:600;margin-bottom:.25rem}.stl-zone p{font-size:.78rem;color:var(--muted)}
-.stl-ok{background:#0d1f24;border:1px solid var(--accent);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem}
+.stl-ok{background:var(--surface3);border:1px solid var(--accent);border-radius:10px;padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem}
 .stl-ok>span{font-size:1.3rem}.stl-ok-txt{flex:1}.stl-ok-txt h4{font-size:.85rem;font-weight:600;color:var(--accent)}.stl-ok-txt p{font-size:.74rem;color:var(--muted)}
 .stl-rm{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem}.stl-rm:hover{color:#f55}
 /* MATERIALS */
 .mat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin:.4rem 0 .8rem}
-.mc{background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:.85rem .65rem;cursor:pointer;transition:border-color .2s,background .2s;position:relative;text-align:center}.mc:hover{border-color:var(--accent);background:#0d1f24}.mc.sel{border-color:var(--accent);background:#0d1f24}.mc.sel::after{content:'✓';position:absolute;top:5px;right:7px;color:var(--accent);font-size:.72rem;font-weight:700}
+.mc{background:var(--bg3);border:2px solid var(--border);border-radius:10px;padding:.85rem .65rem;cursor:pointer;transition:border-color .2s,background .2s;position:relative;text-align:center}.mc:hover{border-color:var(--accent);background:var(--surface3)}.mc.sel{border-color:var(--accent);background:var(--surface3)}.mc.sel::after{content:'✓';position:absolute;top:5px;right:7px;color:var(--accent);font-size:.72rem;font-weight:700}
 .me{font-size:1.5rem;margin-bottom:.3rem}.mn{font-size:.82rem;font-weight:700;margin-bottom:.12rem}.ms{font-size:.7rem;color:var(--muted)}
-.mtt{display:none;position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:#1a1a1a;border:1px solid var(--border);border-radius:10px;padding:.75rem;width:185px;z-index:10;text-align:left;pointer-events:none}.mtt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1a1a1a}
+.mtt{display:none;position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.75rem;width:185px;z-index:10;text-align:left;pointer-events:none}.mtt::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--surface)}
 .mc:hover .mtt{display:block}.mtt h4{font-size:.78rem;font-weight:700;color:var(--accent);margin-bottom:.35rem}.mtt p{font-size:.73rem;color:var(--muted);line-height:1.4;margin-bottom:.35rem}
-.br{display:flex;align-items:center;gap:.4rem;margin:.22rem 0}.brl{font-size:.66rem;color:var(--muted);width:52px;flex-shrink:0}.brb{flex:1;height:3px;background:#222;border-radius:2px}.brf{height:100%;border-radius:2px;background:var(--accent)}
-.est{background:#0a0a0a;border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;margin:.5rem 0 .8rem}
+.br{display:flex;align-items:center;gap:.4rem;margin:.22rem 0}.brl{font-size:.66rem;color:var(--muted);width:52px;flex-shrink:0}.brb{flex:1;height:3px;background:var(--border);border-radius:2px}.brf{height:100%;border-radius:2px;background:var(--accent)}
+.est{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;display:flex;justify-content:space-between;align-items:center;margin:.5rem 0 .8rem}
 .est-l{font-size:.8rem;color:var(--muted)}.est-n{font-size:.76rem;color:var(--muted)}.est-v{font-size:1.05rem;font-weight:700;color:var(--accent)}
 /* PAGE */
 section{padding:4rem 5%}
@@ -76,8 +80,8 @@ section{padding:4rem 5%}
 .stitle{font-size:clamp(1.6rem,3vw,2.2rem);font-weight:700;letter-spacing:-.5px;margin-bottom:.5rem}
 .ssub{color:var(--muted);font-size:.95rem;max-width:480px}
 .hero{text-align:center;padding:5.5rem 5% 4.5rem;max-width:800px;margin:0 auto}
-.badge{display:inline-block;background:#1a1a1a;border:1px solid var(--border);color:var(--accent);font-size:.75rem;padding:.28rem .85rem;border-radius:20px;letter-spacing:.5px;margin-bottom:1.3rem}
-.hero h1{font-size:clamp(2.1rem,5vw,3.5rem);font-weight:700;letter-spacing:-1.5px;line-height:1.1;margin-bottom:1rem}.hero h1 span{color:var(--accent)}
+.badge{display:inline-block;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-size:.75rem;padding:.28rem .85rem;border-radius:20px;letter-spacing:.5px;margin-bottom:1.3rem}
+.hero h1{font-size:clamp(2.1rem,5vw,3.5rem);font-weight:700;letter-spacing:-1.5px;line-height:1.1;margin-bottom:1rem}.hero h1 .accent-text{color:var(--accent)}
 .hero>p{font-size:1rem;color:var(--muted);max-width:490px;margin:0 auto 1.9rem}
 .btnp{display:inline-block;background:var(--accent);color:#000;padding:.78rem 1.8rem;border-radius:8px;font-weight:700;font-size:.92rem;cursor:pointer;border:none;transition:background .2s}.btnp:hover{background:var(--accent2)}
 .btns{display:inline-block;border:1px solid var(--border);color:var(--muted);padding:.78rem 1.8rem;border-radius:8px;font-weight:500;font-size:.92rem;margin-left:.7rem;transition:border-color .2s,color .2s}.btns:hover{border-color:var(--accent);color:var(--text)}
@@ -90,9 +94,9 @@ section{padding:4rem 5%}
 .prodsec{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
 .cat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:.9rem;margin-top:1.8rem}
 .catc{background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s}.catc:hover{border-color:var(--accent);transform:translateY(-3px)}
-.catthumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;background:#1a1a1a}
+.catthumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:2.6rem;background:var(--surface)}
 .catinfo{padding:.85rem}.catinfo h4{font-size:.88rem;font-weight:600;margin-bottom:.18rem}.catinfo p{font-size:.76rem;color:var(--muted)}
-.cattag{display:inline-block;background:#1e2a2e;color:var(--accent);font-size:.67rem;padding:.13rem .5rem;border-radius:20px;margin-top:.3rem}
+.cattag{display:inline-block;background:var(--surface3);color:var(--accent);font-size:.67rem;padding:.13rem .5rem;border-radius:20px;margin-top:.3rem}
 .catcta{font-size:.76rem;color:var(--accent);margin-top:.45rem;font-weight:600}
 .hgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1.8rem;margin-top:1.8rem}
 .hs{position:relative;padding-left:3rem}
@@ -105,26 +109,32 @@ section{padding:4rem 5%}
 .ctasec{text-align:center;padding:5rem 5%}
 .ctasec h2{font-size:clamp(1.7rem,3.5vw,2.4rem);font-weight:700;letter-spacing:-.5px;margin-bottom:.7rem}.ctasec p{color:var(--muted);margin-bottom:1.7rem}
 footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;font-size:.79rem;color:var(--muted)}
-.flinks{display:flex;gap:1.3rem}.flinks a:hover{color:var(--text)}
+.flinks{display:flex;gap:1.3rem;flex-wrap:wrap}.flinks a:hover{color:var(--text)}.flinks .soon{cursor:default;opacity:.6}
+.imp-addr{background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;margin:.8rem 0;font-size:.85rem;color:var(--muted)}
+@media (max-width:640px){.nav-links{display:none}.mat-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
 
 <nav>
   <div class="logo">print<span>3D</span></div>
-  <div class="nav-links"><a href="#" onclick="openAllProds();return false">Produkte</a><a href="#" onclick="document.querySelector('.hgrid').scrollIntoView({behavior:'smooth'});return false">Prozess</a><a href="#" onclick="openKontakt();return false">Kontakt</a></div>
-  <button class="cart-btn" onclick="openCart()">🛒 Warenkorb <span class="cart-count" id="cc">0</span></button>
+  <div class="nav-links"><a href="#" onclick="openAllProds();return false" data-i18n="navProducts">Produkte</a><a href="#" onclick="document.querySelector('.hgrid').scrollIntoView({behavior:'smooth'});return false" data-i18n="navProcess">Prozess</a><a href="#" onclick="openKontakt();return false" data-i18n="navContact">Kontakt</a></div>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Theme">🌙</button>
+    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
+    <button class="cart-btn" onclick="openCart()">🛒 <span data-i18n="cartBtnLabel">Warenkorb</span> <span class="cart-count" id="cc">0</span></button>
+  </div>
 </nav>
 
 <div class="overlay" id="ov" onclick="closeOverlay()"></div>
 
 <!-- CART -->
 <div class="cart-panel" id="cartPanel">
-  <div class="ph"><h2>🛒 Warenkorb</h2><button class="xx" onclick="closeCart()">×</button></div>
-  <div class="cb" id="cb"><div class="cempty">Dein Warenkorb ist noch leer.</div></div>
+  <div class="ph"><h2>🛒 <span data-i18n="cartTitle">Warenkorb</span></h2><button class="xx" onclick="closeCart()">×</button></div>
+  <div class="cb" id="cb"><div class="cempty" data-i18n="cartEmpty">Dein Warenkorb ist noch leer.</div></div>
   <div class="cf">
-    <div class="ct-row"><span>Gesamt</span><span id="ctot">0.00 CHF</span></div>
-    <button class="bigbtn" id="chkBtn" onclick="openCheck()" disabled>Auschecken →</button>
+    <div class="ct-row"><span data-i18n="cartTotal">Gesamt</span><span id="ctot">0.00 CHF</span></div>
+    <button class="bigbtn" id="chkBtn" onclick="openCheck()" disabled><span data-i18n="checkoutBtn">Auschecken →</span></button>
   </div>
 </div>
 
@@ -134,22 +144,22 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
     <h2 id="catT" style="display:block;margin-bottom:.2rem"></h2>
     <div class="msub" id="catS"></div>
     <div class="prd-grid" id="prdGrid"></div>
-    <div class="mnav" style="margin-top:1.3rem"><button class="bbk" onclick="closeCat()">← Schließen</button></div>
+    <div class="mnav" style="margin-top:1.3rem"><button class="bbk" onclick="closeCat()" data-i18n="catClose">← Schließen</button></div>
   </div>
 </div>
 
 <!-- CUSTOM ORDER -->
 <div class="modal" id="customModal">
   <div class="mbox">
-    <h2>🎨 Eigenes Produkt drucken <button class="xx" onclick="closeCustom()">×</button></h2>
-    <div class="msub">Lade deine STL-Datei hoch, wähle Material – Preis wird automatisch berechnet.</div>
+    <h2><span data-i18n="customTitle">🎨 Eigenes Produkt drucken</span><button class="xx" onclick="closeCustom()">×</button></h2>
+    <div class="msub" data-i18n="customSub">Lade deine STL-Datei hoch, wähle Material – Preis wird automatisch berechnet.</div>
 
-    <div class="stag">1 · STL-Datei hochladen</div>
+    <div class="stag" data-i18n="step1Label">1 · STL-Datei hochladen</div>
     <div class="stl-zone" id="stlZone">
       <input type="file" accept=".stl" id="stlIn" onchange="handleSTL(this.files[0])"/>
       <div class="dz-ic">📂</div>
-      <h3>Datei ablegen oder klicken</h3>
-      <p>Nur .stl Dateien · max. 10 MB</p>
+      <h3 data-i18n="dzTitle">Datei ablegen oder klicken</h3>
+      <p data-i18n="dzSub">Nur .stl Dateien · max. 10 MB</p>
     </div>
     <div class="stl-ok" id="stlOk" style="display:none">
       <span>📄</span>
@@ -157,20 +167,20 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
       <button class="stl-rm" onclick="clearSTL()">✕</button>
     </div>
 
-    <div class="stag">2 · Material wählen <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(Maus drüber für Details)</span></div>
+    <div class="stag"><span data-i18n="step2Label">2 · Material wählen</span> <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0" data-i18n="step2Hint">(Maus drüber für Details)</span></div>
     <div class="mat-grid" id="matGrid"></div>
 
     <div class="est" id="estBox" style="display:none">
       <div>
-        <div class="est-l">Geschätztes Gewicht (20% Infill)</div>
+        <div class="est-l" data-i18n="estLabel">Geschätztes Gewicht (20% Infill)</div>
         <div class="est-n" id="estW"></div>
       </div>
       <div class="est-v" id="estP"></div>
     </div>
 
     <div class="mnav">
-      <button class="bbk" onclick="closeCustom()">Abbrechen</button>
-      <button class="bfwd" id="addCBtn" onclick="addCustomToCart()" disabled>🛒 In den Warenkorb</button>
+      <button class="bbk" onclick="closeCustom()" data-i18n="cancelBtn">Abbrechen</button>
+      <button class="bfwd" id="addCBtn" onclick="addCustomToCart()" disabled data-i18n="addCartBtn">🛒 In den Warenkorb</button>
     </div>
   </div>
 </div>
@@ -179,33 +189,34 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 <div class="modal" id="checkModal">
   <div class="mbox">
     <div id="checkFrm">
-      <h2>Bezahlen <button class="xx" onclick="closeCheck()">×</button></h2>
-      <div class="stag">Lieferadresse</div>
-      <div class="fg"><label>Name</label><input id="chN" placeholder="Max Mustermann"/></div>
-      <div class="fg"><label>E-Mail</label><input id="chE" type="email" placeholder="max@beispiel.de"/></div>
-      <div class="fg"><label>Straße & Nr.</label><input id="chSt" placeholder="Musterstraße 12"/></div>
+      <h2><span data-i18n="payTitle">Bezahlen</span><button class="xx" onclick="closeCheck()">×</button></h2>
+      <div class="stag" data-i18n="shipAddr">Lieferadresse</div>
+      <div class="fg"><label data-i18n="lblName">Name</label><input id="chN" placeholder="Max Mustermann"/></div>
+      <div class="fg"><label data-i18n="lblEmail">E-Mail</label><input id="chE" type="email" placeholder="max@beispiel.de"/></div>
+      <div class="fg"><label data-i18n="lblStreet">Straße & Nr.</label><input id="chSt" placeholder="Musterstraße 12"/></div>
       <div class="frow">
-        <div class="fg"><label>PLZ</label><input id="chP" placeholder="8000"/></div>
-        <div class="fg"><label>Ort</label><input id="chC" placeholder="Zürich"/></div>
+        <div class="fg"><label data-i18n="lblZip">PLZ</label><input id="chP" placeholder="8000"/></div>
+        <div class="fg"><label data-i18n="lblCity">Ort</label><input id="chC" placeholder="Zürich"/></div>
       </div>
-      <div class="stag">Zahlung</div>
+      <div class="fg"><label data-i18n="lblCountry">Land</label><select id="chCountry" onchange="renderOrderSummary()"></select></div>
+      <div class="stag" data-i18n="paymentLabel">Zahlung</div>
       <div class="ci-badges"><span class="cib">VISA</span><span class="cib">MC</span><span class="cib">PayPal</span><span class="cib">AMEX</span></div>
-      <div class="fg"><label>Karteninhaber</label><input placeholder="Max Mustermann"/></div>
-      <div class="fg"><label>Kartennummer</label><input placeholder="1234 5678 9012 3456"/></div>
+      <div class="fg"><label data-i18n="lblCardholder">Karteninhaber</label><input placeholder="Max Mustermann"/></div>
+      <div class="fg"><label data-i18n="lblCardnum">Kartennummer</label><input placeholder="1234 5678 9012 3456"/></div>
       <div class="frow">
-        <div class="fg"><label>Ablauf</label><input placeholder="MM/JJ"/></div>
-        <div class="fg"><label>CVV</label><input placeholder="123"/></div>
+        <div class="fg"><label data-i18n="lblExpiry">Ablauf</label><input placeholder="MM/JJ"/></div>
+        <div class="fg"><label data-i18n="lblCvv">CVV</label><input placeholder="123"/></div>
       </div>
-      <div class="stag">Bestellübersicht</div>
+      <div class="stag" data-i18n="orderSummary">Bestellübersicht</div>
       <div class="osum" id="osum"></div>
       <div id="errMsg" style="color:#f55;font-size:.8rem;margin-top:.4rem"></div>
-      <button class="bigbtn" id="payBtn" onclick="submitOrder()" style="margin-top:.9rem">💳 Jetzt bezahlen & bestellen</button>
+      <button class="bigbtn" id="payBtn" onclick="submitOrder()" style="margin-top:.9rem" data-i18n="payBtn">💳 Jetzt bezahlen & bestellen</button>
     </div>
     <div class="sbox" id="checkOk" style="display:none">
       <div class="si">✅</div>
-      <h2>Bestellung gesendet!</h2>
-      <p>Danke für deine Bestellung. Wir melden uns bald bei dir.</p>
-      <button class="bigbtn" onclick="closeCheck()" style="margin-top:1.4rem">Zurück zum Shop</button>
+      <h2 data-i18n="orderSentTitle">Bestellung gesendet!</h2>
+      <p data-i18n="orderSentText">Danke für deine Bestellung. Wir melden uns bald bei dir.</p>
+      <button class="bigbtn" onclick="closeCheck()" style="margin-top:1.4rem" data-i18n="backToShop">Zurück zum Shop</button>
     </div>
   </div>
 </div>
@@ -213,12 +224,12 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 <!-- ALLE PRODUKTE MODAL -->
 <div class="modal" id="allProdModal">
   <div class="mbox" style="width:720px">
-    <h2>🛍️ Alle Produkte <button class="xx" onclick="closeAllProds()">×</button></h2>
-    <div class="msub">Klick auf „In den Warenkorb" um Produkte hinzuzufügen.</div>
+    <h2><span data-i18n="allProdTitle">🛍️ Alle Produkte</span><button class="xx" onclick="closeAllProds()">×</button></h2>
+    <div class="msub" data-i18n="allProdSub">Klick auf „In den Warenkorb" um Produkte hinzuzufügen.</div>
     <div id="allProdContent"></div>
     <div class="mnav" style="margin-top:1.2rem">
-      <button class="bbk" onclick="closeAllProds()">Schließen</button>
-      <button class="bfwd" onclick="closeAllProds();openCart()">🛒 Warenkorb ansehen</button>
+      <button class="bbk" onclick="closeAllProds()" data-i18n="closeBtn">Schließen</button>
+      <button class="bfwd" onclick="closeAllProds();openCart()" data-i18n="viewCart">🛒 Warenkorb ansehen</button>
     </div>
   </div>
 </div>
@@ -226,165 +237,352 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 <!-- KONTAKT MODAL -->
 <div class="modal" id="kontaktModal">
   <div class="mbox" style="width:420px;text-align:center">
-    <h2 style="display:block;text-align:center;margin-bottom:1.2rem">📬 Kontakt</h2>
+    <h2 style="display:block;text-align:center;margin-bottom:1.2rem" data-i18n="contactTitle">📬 Kontakt</h2>
     <div style="font-size:3rem;margin-bottom:.8rem">👤</div>
     <div style="font-size:1.1rem;font-weight:700;margin-bottom:.3rem">Matias Senn</div>
-    <div style="font-size:.85rem;color:var(--muted);margin-bottom:1.4rem">print3D – Inhaber</div>
-    <a href="mailto:matias.senn@edu.schule-wetzikon.ch" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:#1a1a1a;border:1px solid var(--border);border-radius:10px;padding:.9rem 1.2rem;color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:.7rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+    <div style="font-size:.85rem;color:var(--muted);margin-bottom:1.4rem" data-i18n="contactRole">print3D – Inhaber</div>
+    <a href="mailto:matias.senn@edu.schule-wetzikon.ch" style="display:flex;align-items:center;justify-content:center;gap:.6rem;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.2rem;color:var(--accent);font-size:.9rem;font-weight:600;margin-bottom:.7rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
       ✉️ matias.senn@edu.schule-wetzikon.ch
     </a>
-    <div style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem">Wir antworten in der Regel innerhalb von 24 Stunden.</div>
-    <button class="bigbtn" onclick="closeKontakt()">Schließen</button>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:.6rem" data-i18n="phoneSoon">📞 Telefon folgt bald</div>
+    <div style="font-size:.8rem;color:var(--muted);margin-bottom:1.5rem" data-i18n="contactNote">Wir antworten in der Regel innerhalb von 24 Stunden.</div>
+    <button class="bigbtn" onclick="closeKontakt()" data-i18n="closeBtn">Schließen</button>
+  </div>
+</div>
+
+<!-- IMPRESSUM MODAL (DE only - rechtlicher Text) -->
+<div class="modal" id="impressumModal">
+  <div class="mbox" style="width:480px">
+    <h2><span>⚖️ Impressum</span><button class="xx" onclick="closeImpressum()">×</button></h2>
+    <div class="msub">Angaben gemäss Art. 3 UWG (Anbieterkennzeichnung)</div>
+    <p style="font-size:.88rem;margin-bottom:.3rem"><strong>Verantwortlich für den Inhalt</strong><br>Matias Senn</p>
+    <div class="imp-addr">📍 [Adresse hier einfügen – Straße, Nr., PLZ, Ort]</div>
+    <p style="font-size:.88rem;margin-bottom:.3rem"><strong>Kontakt</strong><br><a href="mailto:matias.senn@edu.schule-wetzikon.ch" style="color:var(--accent)">matias.senn@edu.schule-wetzikon.ch</a></p>
+    <p style="font-size:.78rem;color:var(--muted);margin-top:.8rem">print3D ist ein privates Projekt und kein im Handelsregister eingetragenes Unternehmen. Es besteht daher keine MWST-/UID-Pflicht.</p>
+    <button class="bigbtn" onclick="closeImpressum()" style="margin-top:1.2rem">Schließen</button>
+  </div>
+</div>
+
+<!-- DATENSCHUTZ MODAL (DE only - rechtlicher Text) -->
+<div class="modal" id="datenschutzModal">
+  <div class="mbox" style="width:520px">
+    <h2><span>🔒 Datenschutz</span><button class="xx" onclick="closeDatenschutz()">×</button></h2>
+    <div class="msub">Kurzfassung – ausführliche Datenschutzerklärung folgt</div>
+    <p style="font-size:.85rem;margin-bottom:.6rem">Beim Bestellen über diese Seite erfassen wir Name, E-Mail-Adresse und Lieferadresse sowie – bei Custom-Bestellungen – deine hochgeladene STL-Datei. Diese Angaben werden ausschliesslich zur Abwicklung deiner Bestellung verwendet und per E-Mail an <strong>matias.senn@edu.schule-wetzikon.ch</strong> weitergeleitet.</p>
+    <p style="font-size:.85rem;margin-bottom:.6rem">Der Versand erfolgt technisch über den Drittanbieter <strong>FormSubmit.co</strong>. Es findet keine Weitergabe an weitere Dritte oder zu Werbezwecken statt.</p>
+    <p style="font-size:.78rem;color:var(--muted)">Fragen zu deinen Daten? Schreib uns einfach an die obige E-Mail-Adresse.</p>
+    <button class="bigbtn" onclick="closeDatenschutz()" style="margin-top:1.2rem">Schließen</button>
   </div>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="badge">✦ Handgefertigte 3D-Druckprodukte</div>
-  <h1>Einzigartige Designs.<br><span>Direkt aus dem Drucker.</span></h1>
-  <p>Hochwertige 3D-gedruckte Produkte – individuell, präzise und mit Liebe zum Detail gefertigt.</p>
+  <div class="badge" data-i18n="heroBadge">✦ Handgefertigte 3D-Druckprodukte</div>
+  <h1><span data-i18n="heroH1a">Einzigartige Designs.</span><br><span class="accent-text" data-i18n="heroH1b">Direkt aus dem Drucker.</span></h1>
+  <p data-i18n="heroP">Hochwertige 3D-gedruckte Produkte – individuell, präzise und mit Liebe zum Detail gefertigt.</p>
   <div>
-    <button class="btnp" onclick="document.querySelector('.prodsec').scrollIntoView({behavior:'smooth'})">Produkte entdecken</button>
-    <a href="#" class="btns">Wie es funktioniert</a>
+    <button class="btnp" onclick="document.querySelector('.prodsec').scrollIntoView({behavior:'smooth'})" data-i18n="heroBtnP">Produkte entdecken</button>
+    <a href="#" class="btns" data-i18n="heroBtnS">Wie es funktioniert</a>
   </div>
   <div class="stats">
-    <div class="stat"><div class="stat-n">200+</div><div class="stat-l">Designs</div></div>
+    <div class="stat"><div class="stat-n">200+</div><div class="stat-l" data-i18n="statDesigns">Designs</div></div>
     <div class="dv"></div>
-    <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Individuell</div></div>
+    <div class="stat"><div class="stat-n">100%</div><div class="stat-l" data-i18n="statCustom">Individuell</div></div>
     <div class="dv"></div>
-    <div class="stat"><div class="stat-n">48h</div><div class="stat-l">Lieferzeit</div></div>
+    <div class="stat"><div class="stat-n">48h</div><div class="stat-l" data-i18n="statDelivery">Lieferzeit</div></div>
     <div class="dv"></div>
-    <div class="stat"><div class="stat-n">★ 4.9</div><div class="stat-l">Bewertung</div></div>
+    <div class="stat"><div class="stat-n">★ 4.9</div><div class="stat-l" data-i18n="statRating">Bewertung</div></div>
   </div>
 </section>
 
 <!-- FEATURES -->
 <section>
-  <div class="stag2">Warum print3D</div>
-  <div class="stitle">Qualität trifft Kreativität</div>
-  <div class="ssub">Jedes Produkt wird mit modernsten Druckern und hochwertigen Materialien hergestellt.</div>
+  <div class="stag2" data-i18n="featTag">Warum print3D</div>
+  <div class="stitle" data-i18n="featTitle">Qualität trifft Kreativität</div>
+  <div class="ssub" data-i18n="featSub">Jedes Produkt wird mit modernsten Druckern und hochwertigen Materialien hergestellt.</div>
   <div class="g3">
-    <div class="fc"><div class="fi">⚙️</div><h3>Präzisionsdruck</h3><p>FDM & Resin-Drucker für gestochen scharfe Details und perfekte Maßhaltigkeit.</p></div>
-    <div class="fc"><div class="fi">🎨</div><h3>Individualisierbar</h3><p>Farbe, Größe, Material – fast alles anpassbar. Dein Wunsch, unser Druck.</p></div>
-    <div class="fc"><div class="fi">📦</div><h3>Schnelle Lieferung</h3><p>Sorgfältig verpackt und zuverlässig geliefert – in der Regel innerhalb 48 Stunden.</p></div>
+    <div class="fc"><div class="fi">⚙️</div><h3 data-i18n="feat1T">Präzisionsdruck</h3><p data-i18n="feat1D">FDM & Resin-Drucker für gestochen scharfe Details und perfekte Maßhaltigkeit.</p></div>
+    <div class="fc"><div class="fi">🎨</div><h3 data-i18n="feat2T">Individualisierbar</h3><p data-i18n="feat2D">Farbe, Größe, Material – fast alles anpassbar. Dein Wunsch, unser Druck.</p></div>
+    <div class="fc"><div class="fi">📦</div><h3 data-i18n="feat3T">Schnelle Lieferung</h3><p data-i18n="feat3D">Sorgfältig verpackt und zuverlässig geliefert – in der Regel innerhalb 48 Stunden.</p></div>
   </div>
 </section>
 
 <!-- PRODUCTS / CATEGORIES -->
 <section class="prodsec">
-  <div class="stag2">Kategorien</div>
-  <div class="stitle">Was wir drucken</div>
-  <div class="ssub">Klick auf eine Kategorie, um die Produkte zu sehen und in den Warenkorb zu legen.</div>
+  <div class="stag2" data-i18n="catsTag">Kategorien</div>
+  <div class="stitle" data-i18n="catsTitle">Was wir drucken</div>
+  <div class="ssub" data-i18n="catsSub">Klick auf eine Kategorie, um die Produkte zu sehen und in den Warenkorb zu legen.</div>
   <div class="cat-cards" id="catCards"></div>
 </section>
 
 <!-- HOW IT WORKS -->
 <section>
-  <div class="stag2">Prozess</div>
-  <div class="stitle">So einfach gehts</div>
+  <div class="stag2" data-i18n="procTag">Prozess</div>
+  <div class="stitle" data-i18n="procTitle">So einfach gehts</div>
   <div class="hgrid">
-    <div class="hs"><div class="hnum">1</div><h3>Kategorie wählen</h3><p>Klick auf eine Kategorie und wähle ein Produkt aus – oder lade deine eigene STL-Datei hoch.</p></div>
-    <div class="hs"><div class="hnum">2</div><h3>In den Warenkorb</h3><p>Alle gewünschten Artikel sammeln, dann über den Warenkorb auschecken.</p></div>
-    <div class="hs"><div class="hnum">3</div><h3>Empfangen & genießen</h3><p>Dein einzigartiges 3D-Druckprodukt wird sicher und schnell geliefert.</p></div>
+    <div class="hs"><div class="hnum">1</div><h3 data-i18n="step1H">Kategorie wählen</h3><p data-i18n="step1P">Klick auf eine Kategorie und wähle ein Produkt aus – oder lade deine eigene STL-Datei hoch.</p></div>
+    <div class="hs"><div class="hnum">2</div><h3 data-i18n="step2H">In den Warenkorb</h3><p data-i18n="step2P">Alle gewünschten Artikel sammeln, dann über den Warenkorb auschecken.</p></div>
+    <div class="hs"><div class="hnum">3</div><h3 data-i18n="step3H">Empfangen & genießen</h3><p data-i18n="step3P">Dein einzigartiges 3D-Druckprodukt wird sicher und schnell geliefert.</p></div>
   </div>
 </section>
 
 <!-- TESTIMONIALS -->
 <section class="tessec">
-  <div class="stag2">Kundenstimmen</div>
-  <div class="stitle">Was andere sagen</div>
+  <div class="stag2" data-i18n="tesTag">Kundenstimmen</div>
+  <div class="stitle" data-i18n="tesTitle">Was andere sagen</div>
   <div class="tgrid">
-    <div class="tes"><div class="stars">★★★★★</div><p>„Die Qualität ist absolut beeindruckend. Mein individueller Organizer sitzt perfekt!"</p><div class="tes-au">– Lena M., Amsterdam</div></div>
-    <div class="tes"><div class="stars">★★★★★</div><p>„Superschnelle Lieferung. Die Deko-Vase ist ein echter Hingucker bei uns zu Hause."</p><div class="tes-au">– Markus T., Berlin</div></div>
-    <div class="tes"><div class="stars">★★★★★</div><p>„Hab eine personalisierte Figur als Geschenk bestellt. Absolut begeistert!"</p><div class="tes-au">– Sarah K., Wien</div></div>
+    <div class="tes"><div class="stars">★★★★★</div><p data-i18n="tes1">„Die Qualität ist absolut beeindruckend. Mein individueller Organizer sitzt perfekt!"</p><div class="tes-au">– Lena M., Amsterdam</div></div>
+    <div class="tes"><div class="stars">★★★★★</div><p data-i18n="tes2">„Superschnelle Lieferung. Die Deko-Vase ist ein echter Hingucker bei uns zu Hause."</p><div class="tes-au">– Markus T., Berlin</div></div>
+    <div class="tes"><div class="stars">★★★★★</div><p data-i18n="tes3">„Hab eine personalisierte Figur als Geschenk bestellt. Absolut begeistert!"</p><div class="tes-au">– Sarah K., Wien</div></div>
   </div>
 </section>
 
 <!-- CTA -->
 <section class="ctasec">
-  <h2>Bereit für dein<br>Unikat?</h2>
-  <p>Lade deine eigene STL-Datei hoch und lass uns deine Idee Wirklichkeit werden.</p>
-  <button class="btnp" onclick="openCustom()">🎨 Eigenes Produkt bestellen</button>
+  <h2><span data-i18n="ctaTitleA">Bereit für dein</span><br><span data-i18n="ctaTitleB">Unikat?</span></h2>
+  <p data-i18n="ctaP">Lade deine eigene STL-Datei hoch und lass uns deine Idee Wirklichkeit werden.</p>
+  <button class="btnp" onclick="openCustom()" data-i18n="ctaBtn">🎨 Eigenes Produkt bestellen</button>
 </section>
 
 <footer>
   <div class="logo">print<span style="color:var(--accent)">3D</span></div>
-  <div class="flinks"><a href="#">Impressum</a><a href="#">Datenschutz</a><a href="#">Kontakt</a><a href="#">Instagram</a></div>
+  <div class="flinks">
+    <a href="#" onclick="openImpressum();return false" data-i18n="footImpressum">Impressum</a>
+    <a href="#" onclick="openDatenschutz();return false" data-i18n="footPrivacy">Datenschutz</a>
+    <a href="#" onclick="openKontakt();return false" data-i18n="footContact">Kontakt</a>
+    <span class="soon" title="Instagram folgt bald" data-i18n="footInsta">Instagram (folgt bald)</span>
+  </div>
   <div>© 2026 print3D</div>
 </footer>
 
 <script>
-// ── DATA ─────────────────────────────────────────────────────
+let lang='de';
+let theme='dark';
+let currentCatId=null;
+const I18N={
+  navProducts:{de:'Produkte',en:'Products'},
+  navProcess:{de:'Prozess',en:'Process'},
+  navContact:{de:'Kontakt',en:'Contact'},
+  cartBtnLabel:{de:'Warenkorb',en:'Cart'},
+  cartTitle:{de:'Warenkorb',en:'Cart'},
+  cartEmpty:{de:'Dein Warenkorb ist noch leer.',en:'Your cart is empty.'},
+  cartTotal:{de:'Gesamt',en:'Total'},
+  checkoutBtn:{de:'Auschecken →',en:'Checkout →'},
+  catClose:{de:'← Schließen',en:'← Close'},
+  customTitle:{de:'🎨 Eigenes Produkt drucken',en:'🎨 Print your own product'},
+  customSub:{de:'Lade deine STL-Datei hoch, wähle Material – Preis wird automatisch berechnet.',en:'Upload your STL file, choose a material – the price is calculated automatically.'},
+  step1Label:{de:'1 · STL-Datei hochladen',en:'1 · Upload STL file'},
+  dzTitle:{de:'Datei ablegen oder klicken',en:'Drop file or click'},
+  dzSub:{de:'Nur .stl Dateien · max. 10 MB',en:'.stl files only · max. 10 MB'},
+  step2Label:{de:'2 · Material wählen',en:'2 · Choose material'},
+  step2Hint:{de:'(Maus drüber für Details)',en:'(hover for details)'},
+  estLabel:{de:'Geschätztes Gewicht (20% Infill)',en:'Estimated weight (20% infill)'},
+  cancelBtn:{de:'Abbrechen',en:'Cancel'},
+  addCartBtn:{de:'🛒 In den Warenkorb',en:'🛒 Add to cart'},
+  addToCart:{de:'In den Warenkorb',en:'Add to cart'},
+  added:{de:'Hinzugefügt!',en:'Added!'},
+  individual:{de:'Individuell',en:'Custom'},
+  remove:{de:'Entfernen',en:'Remove'},
+  payTitle:{de:'Bezahlen',en:'Checkout'},
+  shipAddr:{de:'Lieferadresse',en:'Shipping address'},
+  lblName:{de:'Name',en:'Name'},
+  lblEmail:{de:'E-Mail',en:'Email'},
+  lblStreet:{de:'Straße & Nr.',en:'Street & no.'},
+  lblZip:{de:'PLZ',en:'ZIP'},
+  lblCity:{de:'Ort',en:'City'},
+  lblCountry:{de:'Land',en:'Country'},
+  paymentLabel:{de:'Zahlung',en:'Payment'},
+  lblCardholder:{de:'Karteninhaber',en:'Cardholder'},
+  lblCardnum:{de:'Kartennummer',en:'Card number'},
+  lblExpiry:{de:'Ablauf',en:'Expiry'},
+  lblCvv:{de:'CVV',en:'CVV'},
+  orderSummary:{de:'Bestellübersicht',en:'Order summary'},
+  shipping:{de:'Versand',en:'Shipping'},
+  payBtn:{de:'💳 Jetzt bezahlen & bestellen',en:'💳 Pay & order now'},
+  sending:{de:'Wird gesendet...',en:'Sending...'},
+  orderSentTitle:{de:'Bestellung gesendet!',en:'Order sent!'},
+  orderSentText:{de:'Danke für deine Bestellung. Wir melden uns bald bei dir.',en:'Thanks for your order. We will get back to you soon.'},
+  backToShop:{de:'Zurück zum Shop',en:'Back to shop'},
+  allProdTitle:{de:'🛍️ Alle Produkte',en:'🛍️ All products'},
+  allProdSub:{de:'Klick auf „In den Warenkorb" um Produkte hinzuzufügen.',en:'Click "Add to cart" to add products.'},
+  closeBtn:{de:'Schließen',en:'Close'},
+  viewCart:{de:'🛒 Warenkorb ansehen',en:'🛒 View cart'},
+  contactTitle:{de:'📬 Kontakt',en:'📬 Contact'},
+  contactRole:{de:'print3D – Inhaber',en:'print3D – Owner'},
+  contactNote:{de:'Wir antworten in der Regel innerhalb von 24 Stunden.',en:'We usually reply within 24 hours.'},
+  phoneSoon:{de:'📞 Telefon folgt bald',en:'📞 Phone number coming soon'},
+  heroBadge:{de:'✦ Handgefertigte 3D-Druckprodukte',en:'✦ Handmade 3D-printed products'},
+  heroH1a:{de:'Einzigartige Designs.',en:'Unique designs.'},
+  heroH1b:{de:'Direkt aus dem Drucker.',en:'Straight from the printer.'},
+  heroP:{de:'Hochwertige 3D-gedruckte Produkte – individuell, präzise und mit Liebe zum Detail gefertigt.',en:'High-quality 3D-printed products – custom, precise and made with attention to detail.'},
+  heroBtnP:{de:'Produkte entdecken',en:'Discover products'},
+  heroBtnS:{de:'Wie es funktioniert',en:'How it works'},
+  statDesigns:{de:'Designs',en:'Designs'},
+  statCustom:{de:'Individuell',en:'Custom'},
+  statDelivery:{de:'Lieferzeit',en:'Delivery time'},
+  statRating:{de:'Bewertung',en:'Rating'},
+  featTag:{de:'Warum print3D',en:'Why print3D'},
+  featTitle:{de:'Qualität trifft Kreativität',en:'Quality meets creativity'},
+  featSub:{de:'Jedes Produkt wird mit modernsten Druckern und hochwertigen Materialien hergestellt.',en:'Every product is made with state-of-the-art printers and high-quality materials.'},
+  feat1T:{de:'Präzisionsdruck',en:'Precision printing'},
+  feat1D:{de:'FDM & Resin-Drucker für gestochen scharfe Details und perfekte Maßhaltigkeit.',en:'FDM & resin printers for razor-sharp detail and perfect dimensional accuracy.'},
+  feat2T:{de:'Individualisierbar',en:'Customizable'},
+  feat2D:{de:'Farbe, Größe, Material – fast alles anpassbar. Dein Wunsch, unser Druck.',en:'Color, size, material – almost everything is adjustable. Your wish, our print.'},
+  feat3T:{de:'Schnelle Lieferung',en:'Fast delivery'},
+  feat3D:{de:'Sorgfältig verpackt und zuverlässig geliefert – in der Regel innerhalb 48 Stunden.',en:'Carefully packaged and reliably delivered – usually within 48 hours.'},
+  catsTag:{de:'Kategorien',en:'Categories'},
+  catsTitle:{de:'Was wir drucken',en:'What we print'},
+  catsSub:{de:'Klick auf eine Kategorie, um die Produkte zu sehen und in den Warenkorb zu legen.',en:'Click a category to see the products and add them to your cart.'},
+  catCta:{de:'Produkte ansehen →',en:'View products →'},
+  procTag:{de:'Prozess',en:'Process'},
+  procTitle:{de:'So einfach gehts',en:'How it works'},
+  step1H:{de:'Kategorie wählen',en:'Choose a category'},
+  step1P:{de:'Klick auf eine Kategorie und wähle ein Produkt aus – oder lade deine eigene STL-Datei hoch.',en:'Click a category and choose a product – or upload your own STL file.'},
+  step2H:{de:'In den Warenkorb',en:'Add to cart'},
+  step2P:{de:'Alle gewünschten Artikel sammeln, dann über den Warenkorb auschecken.',en:'Collect everything you want, then check out via the cart.'},
+  step3H:{de:'Empfangen & genießen',en:'Receive & enjoy'},
+  step3P:{de:'Dein einzigartiges 3D-Druckprodukt wird sicher und schnell geliefert.',en:'Your unique 3D-printed product is delivered safely and quickly.'},
+  tesTag:{de:'Kundenstimmen',en:'Testimonials'},
+  tesTitle:{de:'Was andere sagen',en:'What others say'},
+  tes1:{de:'„Die Qualität ist absolut beeindruckend. Mein individueller Organizer sitzt perfekt!"',en:'"The quality is absolutely impressive. My custom organizer fits perfectly!"'},
+  tes2:{de:'„Superschnelle Lieferung. Die Deko-Vase ist ein echter Hingucker bei uns zu Hause."',en:'"Super-fast delivery. The decorative vase is a real eye-catcher in our home."'},
+  tes3:{de:'„Hab eine personalisierte Figur als Geschenk bestellt. Absolut begeistert!"',en:'"I ordered a personalized figure as a gift. Absolutely thrilled!"'},
+  ctaTitleA:{de:'Bereit für dein',en:'Ready for your'},
+  ctaTitleB:{de:'Unikat?',en:'one-of-a-kind?'},
+  ctaP:{de:'Lade deine eigene STL-Datei hoch und lass uns deine Idee Wirklichkeit werden.',en:'Upload your own STL file and let\'s turn your idea into reality.'},
+  ctaBtn:{de:'🎨 Eigenes Produkt bestellen',en:'🎨 Order custom product'},
+  footImpressum:{de:'Impressum',en:'Legal notice'},
+  footPrivacy:{de:'Datenschutz',en:'Privacy'},
+  footContact:{de:'Kontakt',en:'Contact'},
+  footInsta:{de:'Instagram (folgt bald)',en:'Instagram (coming soon)'},
+  errAllFields:{de:'❌ Bitte alle Felder ausfüllen.',en:'❌ Please fill in all fields.'},
+  errSend:{de:'❌ Fehler beim Senden. Bitte nochmal versuchen.',en:'❌ Error while sending. Please try again.'},
+};
+
 const CATS=[
-  {id:'deko',nm:'Dekoration',ic:'🏠',tag:'Bestseller',ds:'Vasen, Skulpturen, Wanddeko',prods:[
-    {nm:'Vase Modern S',ic:'🏺',pr:8.90,ds:'Schlanke Vase, 15 cm hoch'},
-    {nm:'Vase Modern L',ic:'🏺',pr:14.90,ds:'Große elegante Vase, 25 cm'},
-    {nm:'Wanddeko Geo',ic:'🔷',pr:12.90,ds:'Geometrisches Wandobjekt'},
-    {nm:'Mini Skulptur',ic:'🗿',pr:18.90,ds:'Abstrakte Deko-Skulptur'},
+  {id:'deko',ic:'🏠',tag:{de:'Bestseller',en:'Bestseller'},nm:{de:'Dekoration',en:'Decoration'},ds:{de:'Vasen, Skulpturen, Wanddeko',en:'Vases, sculptures, wall decor'},prods:[
+    {key:'vase_s',nm:{de:'Vase Modern S',en:'Vase Modern S'},ic:'🏺',pr:8.90,ds:{de:'Schlanke Vase, 15 cm hoch',en:'Slim vase, 15 cm tall'}},
+    {key:'vase_l',nm:{de:'Vase Modern L',en:'Vase Modern L'},ic:'🏺',pr:14.90,ds:{de:'Große elegante Vase, 25 cm',en:'Large elegant vase, 25 cm'}},
+    {key:'wanddeko_geo',nm:{de:'Wanddeko Geo',en:'Geo Wall Art'},ic:'🔷',pr:12.90,ds:{de:'Geometrisches Wandobjekt',en:'Geometric wall piece'}},
+    {key:'mini_skulptur',nm:{de:'Mini Skulptur',en:'Mini Sculpture'},ic:'🗿',pr:18.90,ds:{de:'Abstrakte Deko-Skulptur',en:'Abstract decorative sculpture'}},
   ]},
-  {id:'gadgets',nm:'Gadgets & Tools',ic:'🔧',tag:'Praktisch',ds:'Halter, Organizer, Adapter',prods:[
-    {nm:'Handyständer',ic:'📱',pr:9.90,ds:'Verstellbarer Smartphone-Ständer'},
-    {nm:'Kabelorganizer',ic:'🔌',pr:6.90,ds:'Ordnung für Kabel am Schreibtisch'},
-    {nm:'Stiftehalter',ic:'✏️',pr:7.90,ds:'Organizer für Stifte & Utensilien'},
-    {nm:'Schlüsselhaken',ic:'🗝️',pr:5.90,ds:'Wandmontierter Schlüsselhalter'},
+  {id:'gadgets',ic:'🔧',tag:{de:'Praktisch',en:'Practical'},nm:{de:'Gadgets & Tools',en:'Gadgets & Tools'},ds:{de:'Halter, Organizer, Adapter',en:'Stands, organizers, adapters'},prods:[
+    {key:'handystaender',nm:{de:'Handyständer',en:'Phone Stand'},ic:'📱',pr:9.90,ds:{de:'Verstellbarer Smartphone-Ständer',en:'Adjustable smartphone stand'}},
+    {key:'kabelorganizer',nm:{de:'Kabelorganizer',en:'Cable Organizer'},ic:'🔌',pr:6.90,ds:{de:'Ordnung für Kabel am Schreibtisch',en:'Keeps desk cables tidy'}},
+    {key:'stiftehalter',nm:{de:'Stiftehalter',en:'Pen Holder'},ic:'✏️',pr:7.90,ds:{de:'Organizer für Stifte & Utensilien',en:'Organizer for pens & utensils'}},
+    {key:'schluesselhaken',nm:{de:'Schlüsselhaken',en:'Key Hook'},ic:'🗝️',pr:5.90,ds:{de:'Wandmontierter Schlüsselhalter',en:'Wall-mounted key holder'}},
   ]},
-  {id:'gaming',nm:'Gaming & Hobby',ic:'🎮',tag:'Neu',ds:'Figuren, Zubehör, Cosplay',prods:[
-    {nm:'Würfelturm',ic:'🎲',pr:22.90,ds:'Würfelturm für Brettspiele'},
-    {nm:'Controller Ständer',ic:'🕹️',pr:14.90,ds:'Halterung für Gaming Controller'},
-    {nm:'Mini Figur',ic:'🧙',pr:19.90,ds:'Detailreiche Fantasy-Miniatur'},
-    {nm:'Headset Halter',ic:'🎧',pr:16.90,ds:'Wandhalterung für Headsets'},
+  {id:'gaming',ic:'🎮',tag:{de:'Neu',en:'New'},nm:{de:'Gaming & Hobby',en:'Gaming & Hobby'},ds:{de:'Figuren, Zubehör, Cosplay',en:'Figures, accessories, cosplay'},prods:[
+    {key:'wuerfelturm',nm:{de:'Würfelturm',en:'Dice Tower'},ic:'🎲',pr:22.90,ds:{de:'Würfelturm für Brettspiele',en:'Dice tower for board games'}},
+    {key:'controller_staender',nm:{de:'Controller Ständer',en:'Controller Stand'},ic:'🕹️',pr:14.90,ds:{de:'Halterung für Gaming Controller',en:'Stand for gaming controllers'}},
+    {key:'mini_figur',nm:{de:'Mini Figur',en:'Mini Figure'},ic:'🧙',pr:19.90,ds:{de:'Detailreiche Fantasy-Miniatur',en:'Detailed fantasy miniature'}},
+    {key:'headset_halter',nm:{de:'Headset Halter',en:'Headset Stand'},ic:'🎧',pr:16.90,ds:{de:'Wandhalterung für Headsets',en:'Wall mount for headsets'}},
   ]},
-  {id:'gifts',nm:'Geschenke',ic:'🎁',tag:'Beliebt',ds:'Personalisierte Unikate',prods:[
-    {nm:'Namensschild',ic:'🪧',pr:12.90,ds:'Personalisiertes Namensschild'},
-    {nm:'Schlüsselanhänger',ic:'🔑',pr:7.90,ds:'Custom Schlüsselanhänger'},
-    {nm:'Bilderrahmen 3D',ic:'🖼️',pr:15.90,ds:'Einzigartiger 3D-Bilderrahmen'},
-    {nm:'Spardose',ic:'🐷',pr:11.90,ds:'Individuelle Spardose'},
+  {id:'gifts',ic:'🎁',tag:{de:'Beliebt',en:'Popular'},nm:{de:'Geschenke',en:'Gifts'},ds:{de:'Personalisierte Unikate',en:'Personalized one-of-a-kinds'},prods:[
+    {key:'namensschild',nm:{de:'Namensschild',en:'Name Sign'},ic:'🪧',pr:12.90,ds:{de:'Personalisiertes Namensschild',en:'Personalized name sign'}},
+    {key:'schluesselanhaenger',nm:{de:'Schlüsselanhänger',en:'Keychain'},ic:'🔑',pr:7.90,ds:{de:'Custom Schlüsselanhänger',en:'Custom keychain'}},
+    {key:'bilderrahmen_3d',nm:{de:'Bilderrahmen 3D',en:'3D Picture Frame'},ic:'🖼️',pr:15.90,ds:{de:'Einzigartiger 3D-Bilderrahmen',en:'Unique 3D picture frame'}},
+    {key:'spardose',nm:{de:'Spardose',en:'Piggy Bank'},ic:'🐷',pr:11.90,ds:{de:'Individuelle Spardose',en:'Custom piggy bank'}},
   ]},
 ];
 
 const MATS=[
-  {id:'PLA',em:'🟢',nm:'PLA',sh:'Standard',dens:1.24,desc:'Günstig, viele Farben. Ideal für Deko & Alltagsobjekte.',bars:[55,30,15,65]},
-  {id:'PETG',em:'🔵',nm:'PETG',sh:'Robust',dens:1.27,desc:'Stärker als PLA, hitzebeständiger. Für funktionale Teile.',bars:[72,55,25,60]},
-  {id:'ABS',em:'⚫',nm:'ABS',sh:'Technisch',dens:1.05,desc:'Sehr robust & kratzfest. Für technische & mechanische Teile.',bars:[85,80,20,55]},
-  {id:'TPU',em:'🟡',nm:'TPU',sh:'Flexibel',dens:1.21,desc:'Gummiartig & weich. Für Hüllen, Griffe & biegsame Teile.',bars:[50,40,95,50]},
-  {id:'Resin',em:'🟣',nm:'Resin',sh:'Hochdetail',dens:1.10,desc:'Extrem präzise & glatt. Für Figuren & Schmuck.',bars:[45,35,10,98]},
-  {id:'Nylon',em:'⚪',nm:'Nylon',sh:'Leicht & Stark',dens:1.14,desc:'Hohe Festigkeit, geringes Gewicht. Für Zahnräder & Clips.',bars:[90,70,40,60]},
+  {id:'PLA',em:'🟢',nm:'PLA',sh:{de:'Standard',en:'Standard'},dens:1.24,desc:{de:'Günstig, viele Farben. Ideal für Deko & Alltagsobjekte.',en:'Affordable, many colors. Ideal for decor & everyday objects.'},bars:[55,30,15,65]},
+  {id:'PETG',em:'🔵',nm:'PETG',sh:{de:'Robust',en:'Sturdy'},dens:1.27,desc:{de:'Stärker als PLA, hitzebeständiger. Für funktionale Teile.',en:'Stronger than PLA, more heat-resistant. For functional parts.'},bars:[72,55,25,60]},
+  {id:'ABS',em:'⚫',nm:'ABS',sh:{de:'Technisch',en:'Technical'},dens:1.05,desc:{de:'Sehr robust & kratzfest. Für technische & mechanische Teile.',en:'Very sturdy & scratch-resistant. For technical & mechanical parts.'},bars:[85,80,20,55]},
+  {id:'TPU',em:'🟡',nm:'TPU',sh:{de:'Flexibel',en:'Flexible'},dens:1.21,desc:{de:'Gummiartig & weich. Für Hüllen, Griffe & biegsame Teile.',en:'Rubber-like & soft. For cases, grips & flexible parts.'},bars:[50,40,95,50]},
+  {id:'Resin',em:'🟣',nm:'Resin',sh:{de:'Hochdetail',en:'High-detail'},dens:1.10,desc:{de:'Extrem präzise & glatt. Für Figuren & Schmuck.',en:'Extremely precise & smooth. For figures & jewelry.'},bars:[45,35,10,98]},
+  {id:'Nylon',em:'⚪',nm:'Nylon',sh:{de:'Leicht & Stark',en:'Light & strong'},dens:1.14,desc:{de:'Hohe Festigkeit, geringes Gewicht. Für Zahnräder & Clips.',en:'High strength, low weight. For gears & clips.'},bars:[90,70,40,60]},
 ];
-const BARLABELS=['Stärke','Hitze','Flexibel','Detail'];
+const BARLABELS={de:['Stärke','Hitze','Flexibel','Detail'],en:['Strength','Heat','Flex','Detail']};
 const INFILL=0.20, P100G=5;
 
-// ── STATE ─────────────────────────────────────────────────────
+const COUNTRIES=[
+  {code:'CH',de:'Schweiz',en:'Switzerland'},
+  {code:'DE',de:'Deutschland',en:'Germany'},
+  {code:'AT',de:'Österreich',en:'Austria'},
+  {code:'FR',de:'Frankreich',en:'France'},
+  {code:'IT',de:'Italien',en:'Italy'},
+  {code:'LI',de:'Liechtenstein',en:'Liechtenstein'},
+  {code:'GB',de:'Vereinigtes Königreich',en:'United Kingdom'},
+  {code:'US',de:'USA',en:'United States'},
+  {code:'OTHER',de:'Anderes Land',en:'Other country'},
+];
+
 let cart=[], stlFile=null, stlVol=0, chosenMat=null;
 
-// ── INIT ──────────────────────────────────────────────────────
-(function init(){
-  // category cards
+function chf(n){return n.toFixed(2).replace('.',',')+' CHF';}
+
+function toggleTheme(){
+  theme = theme==='dark'?'light':'dark';
+  if(theme==='light'){document.documentElement.setAttribute('data-theme','light');document.getElementById('themeBtn').textContent='☀️';}
+  else{document.documentElement.removeAttribute('data-theme');document.getElementById('themeBtn').textContent='🌙';}
+}
+
+function toggleLang(){
+  lang = lang==='de'?'en':'de';
+  document.getElementById('langBtn').textContent = lang==='de'?'EN':'DE';
+  applyLang();
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(I18N[k]) el.textContent=I18N[k][lang];
+  });
+  rebuildCatCards();
+  rebuildMatGrid();
+  rebuildCountrySelect();
+  renderCart();
+  if(document.getElementById('catModal').classList.contains('open') && currentCatId) openCat(currentCatId);
+  if(document.getElementById('allProdModal').classList.contains('open')) openAllProds();
+  if(document.getElementById('checkModal').classList.contains('open') && document.getElementById('checkFrm').style.display!=='none') renderOrderSummary();
+}
+
+function rebuildCatCards(){
   document.getElementById('catCards').innerHTML=CATS.map(c=>`
     <div class="catc" onclick="openCat('${c.id}')">
       <div class="catthumb">${c.ic}</div>
-      <div class="catinfo"><h4>${c.nm}</h4><p>${c.ds}</p>
-      <span class="cattag">${c.tag}</span>
-      <div class="catcta">Produkte ansehen →</div></div>
+      <div class="catinfo"><h4>${c.nm[lang]}</h4><p>${c.ds[lang]}</p>
+      <span class="cattag">${c.tag[lang]}</span>
+      <div class="catcta">${I18N.catCta[lang]}</div></div>
     </div>`).join('');
-  // material grid
+}
+function rebuildMatGrid(){
   document.getElementById('matGrid').innerHTML=MATS.map(m=>`
-    <div class="mc" onclick="selMat(this,'${m.id}')">
-      <div class="me">${m.em}</div><div class="mn">${m.nm}</div><div class="ms">${m.sh}</div>
-      <div class="mtt"><h4>${m.nm} – ${m.sh}</h4><p>${m.desc}</p>
-      ${m.bars.map((v,i)=>`<div class="br"><span class="brl">${BARLABELS[i]}</span><div class="brb"><div class="brf" style="width:${v}%"></div></div></div>`).join('')}
+    <div class="mc${chosenMat===m.id?' sel':''}" onclick="selMat(this,'${m.id}')">
+      <div class="me">${m.em}</div><div class="mn">${m.nm}</div><div class="ms">${m.sh[lang]}</div>
+      <div class="mtt"><h4>${m.nm} – ${m.sh[lang]}</h4><p>${m.desc[lang]}</p>
+      ${m.bars.map((v,i)=>`<div class="br"><span class="brl">${BARLABELS[lang][i]}</span><div class="brb"><div class="brf" style="width:${v}%"></div></div></div>`).join('')}
       </div>
     </div>`).join('');
+}
+function rebuildCountrySelect(){
+  const sel=document.getElementById('chCountry');
+  if(!sel)return;
+  const prevVal=sel.value||'CH';
+  sel.innerHTML=COUNTRIES.map(c=>`<option value="${c.code}">${c[lang]}</option>`).join('');
+  sel.value=prevVal;
+}
+(function init(){
+  rebuildCatCards();
+  rebuildMatGrid();
 })();
 
-// ── HELPERS ───────────────────────────────────────────────────
-function chf(n){return n.toFixed(2).replace('.',',')+' CHF';}
-
-// ── CART ──────────────────────────────────────────────────────
 function addRegular(ci,pi){
   const p=CATS[ci].prods[pi];
-  const ex=cart.find(i=>i.key===p.nm);
-  ex?ex.qty++:cart.push({key:p.nm,nm:p.nm,ic:p.ic,pr:p.pr,qty:1});
+  const ex=cart.find(i=>i.key===p.key);
+  ex?ex.qty++:cart.push({key:p.key,catIdx:ci,prodIdx:pi,ic:p.ic,pr:p.pr,qty:1});
   renderCart();closeCat();openCart();
+}
+function addRegularSilent(ci,pi){
+  const p=CATS[ci].prods[pi];
+  const ex=cart.find(i=>i.key===p.key);
+  ex?ex.qty++:cart.push({key:p.key,catIdx:ci,prodIdx:pi,ic:p.ic,pr:p.pr,qty:1});
+  renderCart();
+  const btn=event.target;
+  btn.textContent='✓ '+I18N.added[lang];
+  setTimeout(()=>btn.textContent='+ '+I18N.addToCart[lang],1200);
 }
 function renderCart(){
   const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0);
@@ -393,20 +591,23 @@ function renderCart(){
   document.getElementById('ctot').textContent=chf(tot);
   document.getElementById('chkBtn').disabled=!cart.length;
   const el=document.getElementById('cb');
-  if(!cart.length){el.innerHTML='<div class="cempty">Dein Warenkorb ist noch leer.</div>';return;}
-  el.innerHTML=cart.map((it,idx)=>`
+  if(!cart.length){el.innerHTML=`<div class="cempty">${I18N.cartEmpty[lang]}</div>`;return;}
+  el.innerHTML=cart.map((it,idx)=>{
+    const nm = it.custom ? it.nm : CATS[it.catIdx].prods[it.prodIdx].nm[lang];
+    return `
     <div class="ci">
       <div class="ci-ic">${it.ic}</div>
       <div class="ci-inf">
-        <h4>${it.nm}</h4>
+        <h4>${nm}</h4>
         ${it.mat?`<p>${it.mat}${it.wg?' · ~'+it.wg.toFixed(0)+'g':''}</p>`:''}
         <div class="ci-ctrl">
-          ${!it.custom?`<button class="qb" onclick="chQ(${idx},-1)">−</button><span class="qn">${it.qty}</span><button class="qb" onclick="chQ(${idx},1)">+</button>`:'<span style="font-size:.72rem;color:var(--muted)">Individuell</span>'}
-          <button class="rmb" onclick="rmI(${idx})">✕ Entfernen</button>
+          ${!it.custom?`<button class="qb" onclick="chQ(${idx},-1)">−</button><span class="qn">${it.qty}</span><button class="qb" onclick="chQ(${idx},1)">+</button>`:`<span style="font-size:.72rem;color:var(--muted)">${I18N.individual[lang]}</span>`}
+          <button class="rmb" onclick="rmI(${idx})">✕ ${I18N.remove[lang]}</button>
         </div>
       </div>
       <div class="ci-pr">${chf(it.pr*it.qty)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 function chQ(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart();}
 function rmI(i){cart.splice(i,1);renderCart();}
@@ -414,24 +615,23 @@ function openCart(){document.getElementById('ov').classList.add('open');document
 function closeCart(){document.getElementById('ov').classList.remove('open');document.getElementById('cartPanel').classList.remove('open');}
 function closeOverlay(){closeCart();closeCat();}
 
-// ── CATEGORIES ────────────────────────────────────────────────
 function openCat(id){
+  currentCatId=id;
   const ci=CATS.findIndex(c=>c.id===id), c=CATS[ci];
-  document.getElementById('catT').textContent=c.ic+' '+c.nm;
-  document.getElementById('catS').textContent=c.ds;
+  document.getElementById('catT').textContent=c.ic+' '+c.nm[lang];
+  document.getElementById('catS').textContent=c.ds[lang];
   document.getElementById('prdGrid').innerHTML=c.prods.map((p,pi)=>`
     <div class="prc">
       <div class="prc-ic">${p.ic}</div>
-      <div class="prc-nm">${p.nm}</div>
-      <div class="prc-ds">${p.ds}</div>
+      <div class="prc-nm">${p.nm[lang]}</div>
+      <div class="prc-ds">${p.ds[lang]}</div>
       <div class="prc-pr">${chf(p.pr)}</div>
-      <button class="prc-add" onclick="addRegular(${ci},${pi})">+ In den Warenkorb</button>
+      <button class="prc-add" onclick="addRegular(${ci},${pi})">+ ${I18N.addToCart[lang]}</button>
     </div>`).join('');
   document.getElementById('catModal').classList.add('open');
 }
 function closeCat(){document.getElementById('catModal').classList.remove('open');}
 
-// ── CUSTOM ORDER ──────────────────────────────────────────────
 function openCustom(){
   stlFile=null;stlVol=0;chosenMat=null;
   document.getElementById('stlIn').value='';
@@ -439,7 +639,7 @@ function openCustom(){
   document.getElementById('stlOk').style.display='none';
   document.getElementById('estBox').style.display='none';
   document.getElementById('addCBtn').disabled=true;
-  document.querySelectorAll('.mc').forEach(c=>c.classList.remove('sel'));
+  rebuildMatGrid();
   document.getElementById('customModal').classList.add('open');
 }
 function closeCustom(){document.getElementById('customModal').classList.remove('open');}
@@ -480,14 +680,13 @@ function parseSTL(buf){
       return Math.abs(vol);
     }
   }
-  // ASCII fallback
   const txt=new TextDecoder().decode(buf);
   const re=/vertex\s+([\d.eE+\-]+)\s+([\d.eE+\-]+)\s+([\d.eE+\-]+)/g;
   const vs=[];let m;
   while((m=re.exec(txt))!==null)vs.push([+m[1],+m[2],+m[3]]);
   let vol=0;
   for(let i=0;i<vs.length;i+=3){
-    const[a,b,c]=[vs[i],vs[i+1],vs[i+2]];
+    const a=vs[i],b=vs[i+1],c=vs[i+2];
     vol+=(a[0]*(b[1]*c[2]-b[2]*c[1])+a[1]*(b[2]*c[0]-b[0]*c[2])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;
   }
   return Math.abs(vol);
@@ -514,19 +713,29 @@ function addCustomToCart(){
   renderCart();closeCustom();openCart();
 }
 
-// ── CHECKOUT ──────────────────────────────────────────────────
+function renderOrderSummary(){
+  const country=(document.getElementById('chCountry')||{}).value||'CH';
+  const sh = country==='CH'?4.99:6.99;
+  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0);
+  document.getElementById('osum').innerHTML=
+    cart.map(i=>{
+      const nm = i.custom? i.nm : CATS[i.catIdx].prods[i.prodIdx].nm[lang];
+      return `<div class="or"><span>${i.ic} ${nm}${i.qty>1?' × '+i.qty:''}${i.mat?' ('+i.mat+')':''}</span><span>${chf(i.pr*i.qty)}</span></div>`;
+    }).join('')+
+    `<div class="or"><span>${I18N.shipping[lang]}</span><span>${chf(sh)}</span></div>`+
+    `<div class="or tot"><span>${I18N.cartTotal[lang]}</span><span>${chf(tot+sh)}</span></div>`;
+  return sh;
+}
 function openCheck(){
   closeCart();
-  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0), sh=4.99;
-  document.getElementById('osum').innerHTML=
-    cart.map(i=>`<div class="or"><span>${i.ic} ${i.nm}${i.qty>1?' × '+i.qty:''}${i.mat?' ('+i.mat+')':''}</span><span>${chf(i.pr*i.qty)}</span></div>`).join('')+
-    `<div class="or"><span>Versand</span><span>${chf(sh)}</span></div>`+
-    `<div class="or tot"><span>Gesamt</span><span>${chf(tot+sh)}</span></div>`;
   document.getElementById('checkFrm').style.display='block';
   document.getElementById('checkOk').style.display='none';
   document.getElementById('errMsg').textContent='';
   document.getElementById('payBtn').disabled=false;
-  document.getElementById('payBtn').textContent='💳 Jetzt bezahlen & bestellen';
+  document.getElementById('payBtn').textContent=I18N.payBtn[lang];
+  rebuildCountrySelect();
+  document.getElementById('chCountry').value='CH';
+  renderOrderSummary();
   document.getElementById('checkModal').classList.add('open');
 }
 function closeCheck(){document.getElementById('checkModal').classList.remove('open');}
@@ -537,17 +746,23 @@ async function submitOrder(){
   const st=document.getElementById('chSt').value.trim();
   const p=document.getElementById('chP').value.trim();
   const c=document.getElementById('chC').value.trim();
-  if(!n||!e||!st||!p||!c){document.getElementById('errMsg').textContent='❌ Bitte alle Felder ausfüllen.';return;}
+  const countryCode=document.getElementById('chCountry').value;
+  const countryLabel=((COUNTRIES.find(x=>x.code===countryCode)||{})[lang])||countryCode;
+  if(!n||!e||!st||!p||!c){document.getElementById('errMsg').textContent=I18N.errAllFields[lang];return;}
   const btn=document.getElementById('payBtn');
-  btn.disabled=true;btn.textContent='Wird gesendet...';
-  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0)+4.99;
-  const orderTxt=cart.map(i=>`${i.ic} ${i.nm}${i.mat?' ('+i.mat+')':''}${i.wg?' ~'+i.wg.toFixed(0)+'g':''} × ${i.qty} = ${chf(i.pr*i.qty)}`).join('\n')+'\nVersand = 4.99 CHF\nGesamt = '+chf(tot);
+  btn.disabled=true;btn.textContent=I18N.sending[lang];
+  const sh=countryCode==='CH'?4.99:6.99;
+  const tot=cart.reduce((s,i)=>s+i.pr*i.qty,0)+sh;
+  const orderTxt=cart.map(i=>{
+    const nm=i.custom?i.nm:CATS[i.catIdx].prods[i.prodIdx].nm.de;
+    return `${i.ic} ${nm}${i.mat?' ('+i.mat+')':''}${i.wg?' ~'+i.wg.toFixed(0)+'g':''} × ${i.qty} = ${chf(i.pr*i.qty)}`;
+  }).join('\n')+`\nVersand (${countryLabel}) = ${chf(sh)}\nGesamt = ${chf(tot)}`;
   const fd=new FormData();
   fd.append('_subject','🖨️ Neue print3D Bestellung von '+n);
   fd.append('_captcha','false');
   fd.append('_template','table');
   fd.append('Name',n);fd.append('Email',e);
-  fd.append('Adresse',st+', '+p+' '+c);
+  fd.append('Adresse',st+', '+p+' '+c+', '+countryLabel);
   fd.append('Bestellung',orderTxt);
   fd.append('Gesamtbetrag',chf(tot));
   const cu=cart.find(i=>i.custom&&i.file);
@@ -560,23 +775,22 @@ async function submitOrder(){
       cart=[];renderCart();
     } else throw 0;
   }catch{
-    btn.disabled=false;btn.textContent='💳 Jetzt bezahlen & bestellen';
-    document.getElementById('errMsg').textContent='❌ Fehler beim Senden. Bitte nochmal versuchen.';
+    btn.disabled=false;btn.textContent=I18N.payBtn[lang];
+    document.getElementById('errMsg').textContent=I18N.errSend[lang];
   }
 }
 
-// ── ALL PRODUCTS & KONTAKT ────────────────────────────────────
 function openAllProds(){
   const html=CATS.map((c,ci)=>`
     <div style="margin-bottom:1.4rem">
-      <div style="font-size:.78rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:.6rem">${c.ic} ${c.nm}</div>
+      <div style="font-size:.78rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:.6rem">${c.ic} ${c.nm[lang]}</div>
       <div class="prd-grid">${c.prods.map((p,pi)=>`
         <div class="prc">
           <div class="prc-ic">${p.ic}</div>
-          <div class="prc-nm">${p.nm}</div>
-          <div class="prc-ds">${p.ds}</div>
+          <div class="prc-nm">${p.nm[lang]}</div>
+          <div class="prc-ds">${p.ds[lang]}</div>
           <div class="prc-pr">${chf(p.pr)}</div>
-          <button class="prc-add" onclick="addRegularSilent(${ci},${pi})">+ In den Warenkorb</button>
+          <button class="prc-add" onclick="addRegularSilent(${ci},${pi})">+ ${I18N.addToCart[lang]}</button>
         </div>`).join('')}
       </div>
     </div>`).join('');
@@ -584,19 +798,13 @@ function openAllProds(){
   document.getElementById('allProdModal').classList.add('open');
 }
 function closeAllProds(){document.getElementById('allProdModal').classList.remove('open');}
-function addRegularSilent(ci,pi){
-  const p=CATS[ci].prods[pi];
-  const ex=cart.find(i=>i.key===p.nm);
-  ex?ex.qty++:cart.push({key:p.nm,nm:p.nm,ic:p.ic,pr:p.pr,qty:1});
-  renderCart();
-  // short flash feedback on button
-  event.target.textContent='✓ Hinzugefügt!';
-  setTimeout(()=>event.target.textContent='+ In den Warenkorb',1200);
-}
 function openKontakt(){document.getElementById('kontaktModal').classList.add('open');}
 function closeKontakt(){document.getElementById('kontaktModal').classList.remove('open');}
+function openImpressum(){document.getElementById('impressumModal').classList.add('open');}
+function closeImpressum(){document.getElementById('impressumModal').classList.remove('open');}
+function openDatenschutz(){document.getElementById('datenschutzModal').classList.add('open');}
+function closeDatenschutz(){document.getElementById('datenschutzModal').classList.remove('open');}
 
-// Drag & drop
 const zone=document.getElementById('stlZone');
 zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag')});
 zone.addEventListener('dragleave',()=>zone.classList.remove('drag'));
