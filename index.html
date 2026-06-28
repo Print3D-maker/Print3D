@@ -116,6 +116,11 @@ section{padding:4rem 5%}
 footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem;font-size:.79rem;color:var(--muted)}
 .flinks{display:flex;gap:1.3rem;flex-wrap:wrap}.flinks a:hover{color:var(--text)}.flinks .soon{cursor:default;opacity:.6}
 .imp-addr{background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;margin:.8rem 0;font-size:.85rem;color:var(--muted)}
+.paytabs{display:flex;gap:.5rem;margin-bottom:.9rem}
+.paytab{flex:1;background:var(--surface);border:1px solid var(--border);color:var(--muted);padding:.6rem .5rem;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;transition:border-color .2s,color .2s}
+.paytab:hover{border-color:var(--accent)}
+.paytab.active{border-color:var(--accent);color:var(--accent);background:var(--surface3)}
+.paypanel{min-height:60px}
 @media (max-width:640px){.nav-links{display:none}.mat-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -208,14 +213,34 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
       <div class="stag" data-i18n="orderSummary">Bestellübersicht</div>
       <div class="osum" id="osum"></div>
       <div class="stag" data-i18n="paymentLabel">Zahlung</div>
-      <div class="msub" style="margin-bottom:.7rem" data-i18n="paypalHint">Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.</div>
-      <div id="paypalWrap"></div>
+      <div class="paytabs">
+        <button class="paytab active" id="tabPaypal" onclick="switchPayTab('paypal')">🅿️ PayPal</button>
+        <button class="paytab" id="tabCard" onclick="switchPayTab('card')"><span data-i18n="payCardLabel">💳 Karte</span></button>
+        <button class="paytab" id="tabTwint" onclick="switchPayTab('twint')">📱 TWINT</button>
+      </div>
+      <div id="payPanelPaypal" class="paypanel">
+        <div class="msub" style="margin-bottom:.7rem" data-i18n="paypalHint">Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.</div>
+        <div id="paypal-button-container"></div>
+      </div>
+      <div id="payPanelCard" class="paypanel" style="display:none">
+        <div class="msub" style="margin-bottom:.7rem" data-i18n="cardHint">Sichere Kartenzahlung (Visa, Mastercard, Amex) – abgewickelt über PayPal, ohne eigenes PayPal-Konto nötig.</div>
+        <div id="card-button-container"></div>
+      </div>
+      <div id="payPanelTwint" class="paypanel" style="display:none">
+        <div class="msub" style="margin-bottom:.7rem" data-i18n="twintHint">Sende den Betrag per TWINT, dann bestätige unten – wir prüfen den Zahlungseingang von Hand.</div>
+        <div class="imp-addr" style="text-align:center">
+          📱 <span data-i18n="twintSendTo">Sende</span> <strong id="twintAmount">0.00 CHF</strong> <span data-i18n="twintVia">per TWINT an</span><br>
+          <strong id="twintTarget" style="display:block;margin-top:.4rem"></strong>
+        </div>
+        <button class="bigbtn" onclick="confirmTwint()" data-i18n="twintConfirmBtn">✅ Ich habe bezahlt – Bestellung senden</button>
+      </div>
       <div id="errMsg" style="color:#f55;font-size:.8rem;margin-top:.6rem"></div>
     </div>
     <div class="sbox" id="checkOk" style="display:none">
       <div class="si">✅</div>
       <h2 data-i18n="orderSentTitle">Bestellung gesendet!</h2>
       <p data-i18n="orderSentText">Danke für deine Bestellung. Wir melden uns bald bei dir.</p>
+      <p id="okNote" style="display:none;color:var(--accent);margin-top:.6rem"></p>
       <button class="bigbtn" onclick="closeCheck()" style="margin-top:1.4rem" data-i18n="backToShop">Zurück zum Shop</button>
     </div>
   </div>
@@ -403,6 +428,15 @@ const I18N={
   freeShipReached:{de:'🎉 Kostenloser Versand freigeschaltet!',en:'🎉 Free shipping unlocked!'},
   paypalHint:{de:'Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.',en:'Click the PayPal button to verify your address and pay securely.'},
   paypalSetupNeeded:{de:'PayPal ist noch nicht eingerichtet. Trag deine PayPal-Client-ID im Code ein (Kommentar bei PAYPAL_CLIENT_ID), dann erscheint hier der Bezahl-Button.',en:'PayPal isn\'t set up yet. Add your PayPal client ID in the code (see the PAYPAL_CLIENT_ID comment) to show the payment button here.'},
+  payCardLabel:{de:'💳 Karte',en:'💳 Card'},
+  cardHint:{de:'Sichere Kartenzahlung (Visa, Mastercard, Amex) – abgewickelt über PayPal, ohne eigenes PayPal-Konto nötig.',en:'Secure card payment (Visa, Mastercard, Amex) – processed via PayPal, no PayPal account needed.'},
+  twintHint:{de:'Sende den Betrag per TWINT, dann bestätige unten – wir prüfen den Zahlungseingang von Hand.',en:'Send the amount via TWINT, then confirm below – we verify the payment manually.'},
+  twintSendTo:{de:'Sende',en:'Send'},
+  twintVia:{de:'per TWINT an',en:'via TWINT to'},
+  twintConfirmBtn:{de:'✅ Ich habe bezahlt – Bestellung senden',en:'✅ I\'ve paid – send order'},
+  twintSetupNeeded:{de:'⚠️ TWINT-Nummer noch nicht eingetragen (siehe TWINT_INFO im Code).',en:'⚠️ TWINT number not set up yet (see TWINT_INFO in the code).'},
+  okNoteTwint:{de:'⚠️ Wir prüfen deine TWINT-Zahlung von Hand und melden uns, falls etwas fehlt.',en:'⚠️ We\'ll verify your TWINT payment manually and reach out if anything is missing.'},
+  weightNote:{de:'Gesamtgewicht',en:'Total weight'},
   payBtn:{de:'💳 Jetzt bezahlen & bestellen',en:'💳 Pay & order now'},
   sending:{de:'Wird gesendet...',en:'Sending...'},
   orderSentTitle:{de:'Bestellung gesendet!',en:'Order sent!'},
@@ -467,28 +501,28 @@ const I18N={
 
 const CATS=[
   {id:'deko',ic:'🏠',tag:{de:'Bestseller',en:'Bestseller'},nm:{de:'Dekoration',en:'Decoration'},ds:{de:'Vasen, Skulpturen, Wanddeko',en:'Vases, sculptures, wall decor'},prods:[
-    {key:'vase_s',nm:{de:'Vase Modern S',en:'Vase Modern S'},ic:'🏺',pr:8.90,ds:{de:'Schlanke Vase, 15 cm hoch',en:'Slim vase, 15 cm tall'}},
-    {key:'vase_l',nm:{de:'Vase Modern L',en:'Vase Modern L'},ic:'🏺',pr:14.90,ds:{de:'Große elegante Vase, 25 cm',en:'Large elegant vase, 25 cm'}},
-    {key:'wanddeko_geo',nm:{de:'Wanddeko Geo',en:'Geo Wall Art'},ic:'🔷',pr:12.90,ds:{de:'Geometrisches Wandobjekt',en:'Geometric wall piece'}},
-    {key:'mini_skulptur',nm:{de:'Mini Skulptur',en:'Mini Sculpture'},ic:'🗿',pr:18.90,ds:{de:'Abstrakte Deko-Skulptur',en:'Abstract decorative sculpture'}},
+    {key:'vase_s',wg:180,nm:{de:'Vase Modern S',en:'Vase Modern S'},ic:'🏺',pr:8.90,ds:{de:'Schlanke Vase, 15 cm hoch',en:'Slim vase, 15 cm tall'}},
+    {key:'vase_l',wg:340,nm:{de:'Vase Modern L',en:'Vase Modern L'},ic:'🏺',pr:14.90,ds:{de:'Große elegante Vase, 25 cm',en:'Large elegant vase, 25 cm'}},
+    {key:'wanddeko_geo',wg:150,nm:{de:'Wanddeko Geo',en:'Geo Wall Art'},ic:'🔷',pr:12.90,ds:{de:'Geometrisches Wandobjekt',en:'Geometric wall piece'}},
+    {key:'mini_skulptur',wg:220,nm:{de:'Mini Skulptur',en:'Mini Sculpture'},ic:'🗿',pr:18.90,ds:{de:'Abstrakte Deko-Skulptur',en:'Abstract decorative sculpture'}},
   ]},
   {id:'gadgets',ic:'🔧',tag:{de:'Praktisch',en:'Practical'},nm:{de:'Gadgets & Tools',en:'Gadgets & Tools'},ds:{de:'Halter, Organizer, Adapter',en:'Stands, organizers, adapters'},prods:[
-    {key:'handystaender',nm:{de:'Handyständer',en:'Phone Stand'},ic:'📱',pr:9.90,ds:{de:'Verstellbarer Smartphone-Ständer',en:'Adjustable smartphone stand'}},
-    {key:'kabelorganizer',nm:{de:'Kabelorganizer',en:'Cable Organizer'},ic:'🔌',pr:6.90,ds:{de:'Ordnung für Kabel am Schreibtisch',en:'Keeps desk cables tidy'}},
-    {key:'stiftehalter',nm:{de:'Stiftehalter',en:'Pen Holder'},ic:'✏️',pr:7.90,ds:{de:'Organizer für Stifte & Utensilien',en:'Organizer for pens & utensils'}},
-    {key:'schluesselhaken',nm:{de:'Schlüsselhaken',en:'Key Hook'},ic:'🗝️',pr:5.90,ds:{de:'Wandmontierter Schlüsselhalter',en:'Wall-mounted key holder'}},
+    {key:'handystaender',wg:110,nm:{de:'Handyständer',en:'Phone Stand'},ic:'📱',pr:9.90,ds:{de:'Verstellbarer Smartphone-Ständer',en:'Adjustable smartphone stand'}},
+    {key:'kabelorganizer',wg:55,nm:{de:'Kabelorganizer',en:'Cable Organizer'},ic:'🔌',pr:6.90,ds:{de:'Ordnung für Kabel am Schreibtisch',en:'Keeps desk cables tidy'}},
+    {key:'stiftehalter',wg:85,nm:{de:'Stiftehalter',en:'Pen Holder'},ic:'✏️',pr:7.90,ds:{de:'Organizer für Stifte & Utensilien',en:'Organizer for pens & utensils'}},
+    {key:'schluesselhaken',wg:35,nm:{de:'Schlüsselhaken',en:'Key Hook'},ic:'🗝️',pr:5.90,ds:{de:'Wandmontierter Schlüsselhalter',en:'Wall-mounted key holder'}},
   ]},
   {id:'gaming',ic:'🎮',tag:{de:'Neu',en:'New'},nm:{de:'Gaming & Hobby',en:'Gaming & Hobby'},ds:{de:'Figuren, Zubehör, Cosplay',en:'Figures, accessories, cosplay'},prods:[
-    {key:'wuerfelturm',nm:{de:'Würfelturm',en:'Dice Tower'},ic:'🎲',pr:22.90,ds:{de:'Würfelturm für Brettspiele',en:'Dice tower for board games'}},
-    {key:'controller_staender',nm:{de:'Controller Ständer',en:'Controller Stand'},ic:'🕹️',pr:14.90,ds:{de:'Halterung für Gaming Controller',en:'Stand for gaming controllers'}},
-    {key:'mini_figur',nm:{de:'Mini Figur',en:'Mini Figure'},ic:'🧙',pr:19.90,ds:{de:'Detailreiche Fantasy-Miniatur',en:'Detailed fantasy miniature'}},
-    {key:'headset_halter',nm:{de:'Headset Halter',en:'Headset Stand'},ic:'🎧',pr:16.90,ds:{de:'Wandhalterung für Headsets',en:'Wall mount for headsets'}},
+    {key:'wuerfelturm',wg:260,nm:{de:'Würfelturm',en:'Dice Tower'},ic:'🎲',pr:22.90,ds:{de:'Würfelturm für Brettspiele',en:'Dice tower for board games'}},
+    {key:'controller_staender',wg:150,nm:{de:'Controller Ständer',en:'Controller Stand'},ic:'🕹️',pr:14.90,ds:{de:'Halterung für Gaming Controller',en:'Stand for gaming controllers'}},
+    {key:'mini_figur',wg:40,nm:{de:'Mini Figur',en:'Mini Figure'},ic:'🧙',pr:19.90,ds:{de:'Detailreiche Fantasy-Miniatur',en:'Detailed fantasy miniature'}},
+    {key:'headset_halter',wg:190,nm:{de:'Headset Halter',en:'Headset Stand'},ic:'🎧',pr:16.90,ds:{de:'Wandhalterung für Headsets',en:'Wall mount for headsets'}},
   ]},
   {id:'gifts',ic:'🎁',tag:{de:'Beliebt',en:'Popular'},nm:{de:'Geschenke',en:'Gifts'},ds:{de:'Personalisierte Unikate',en:'Personalized one-of-a-kinds'},prods:[
-    {key:'namensschild',nm:{de:'Namensschild',en:'Name Sign'},ic:'🪧',pr:12.90,ds:{de:'Personalisiertes Namensschild',en:'Personalized name sign'}},
-    {key:'schluesselanhaenger',nm:{de:'Schlüsselanhänger',en:'Keychain'},ic:'🔑',pr:7.90,ds:{de:'Custom Schlüsselanhänger',en:'Custom keychain'}},
-    {key:'bilderrahmen_3d',nm:{de:'Bilderrahmen 3D',en:'3D Picture Frame'},ic:'🖼️',pr:15.90,ds:{de:'Einzigartiger 3D-Bilderrahmen',en:'Unique 3D picture frame'}},
-    {key:'spardose',nm:{de:'Spardose',en:'Piggy Bank'},ic:'🐷',pr:11.90,ds:{de:'Individuelle Spardose',en:'Custom piggy bank'}},
+    {key:'namensschild',wg:120,nm:{de:'Namensschild',en:'Name Sign'},ic:'🪧',pr:12.90,ds:{de:'Personalisiertes Namensschild',en:'Personalized name sign'}},
+    {key:'schluesselanhaenger',wg:12,nm:{de:'Schlüsselanhänger',en:'Keychain'},ic:'🔑',pr:7.90,ds:{de:'Custom Schlüsselanhänger',en:'Custom keychain'}},
+    {key:'bilderrahmen_3d',wg:170,nm:{de:'Bilderrahmen 3D',en:'3D Picture Frame'},ic:'🖼️',pr:15.90,ds:{de:'Einzigartiger 3D-Bilderrahmen',en:'Unique 3D picture frame'}},
+    {key:'spardose',wg:150,nm:{de:'Spardose',en:'Piggy Bank'},ic:'🐷',pr:11.90,ds:{de:'Individuelle Spardose',en:'Custom piggy bank'}},
   ]},
 ];
 
@@ -504,6 +538,16 @@ const BARLABELS={de:['Stärke','Hitze','Flexibel','Detail'],en:['Strength','Heat
 const INFILL=0.20, P100G=5;
 const FREE_SHIP_THRESHOLD=50; // ab diesem Bestellwert (CHF) ist der Versand kostenlos
 const PAYPAL_CLIENT_ID='YOUR_PAYPAL_CLIENT_ID'; // <-- hier deine echte PayPal Client-ID einfügen (developer.paypal.com → Apps & Credentials)
+const TWINT_INFO='YOUR_TWINT_NUMBER_OR_QR'; // <-- hier deine TWINT-Telefonnummer eintragen, z.B. '+41 79 123 45 67'
+
+// Echte Tarife der Schweizer Post, gültig seit 1.1.2026 (Quelle: post.ch)
+// Inland (PostPac Economy bis 2kg) - flat, da die Post hier nicht nach Gewicht unter 2kg staffelt
+const SHIP_DOMESTIC_FLAT=9.00;
+// "Kleinwaren International" Zone 1 / Europa (DE, AT, FR, IT, GB) - gestaffelt nach Gewicht
+const SHIP_ZONE1=[{max:100,price:4.50},{max:250,price:9.50},{max:500,price:14.50},{max:1000,price:20.50},{max:1500,price:25.50},{max:2000,price:30.50}];
+// "Kleinwaren International" Zone 2 / übrige Länder (USA, sonstige)
+const SHIP_ZONE2=[{max:100,price:7.50},{max:250,price:12.50},{max:500,price:17.50},{max:1000,price:27.50},{max:1500,price:32.50},{max:2000,price:37.50}];
+// Liechtenstein: Zollunion mit der Schweiz, wird wie Inland behandelt
 
 const COUNTRIES=[
   {code:'CH',de:'Schweiz',en:'Switzerland'},
@@ -544,7 +588,7 @@ function applyLang(){
   renderCart();
   if(document.getElementById('catModal').classList.contains('open') && currentCatId) openCat(currentCatId);
   if(document.getElementById('allProdModal').classList.contains('open')) openAllProds();
-  if(document.getElementById('checkModal').classList.contains('open') && document.getElementById('checkFrm').style.display!=='none'){renderOrderSummary();renderPaypalArea();}
+  if(document.getElementById('checkModal').classList.contains('open') && document.getElementById('checkFrm').style.display!=='none'){renderOrderSummary();renderPaypalArea();renderTwintPanel();}
 }
 
 function rebuildCatCards(){
@@ -725,11 +769,27 @@ function addCustomToCart(){
   renderCart();closeCustom();openCart();
 }
 
+function shipZone(countryCode){
+  if(countryCode==='CH'||countryCode==='LI')return'domestic';
+  if(['DE','AT','FR','IT','GB'].includes(countryCode))return'zone1';
+  return'zone2';
+}
+function shipPriceForWeight(zone,weightG){
+  if(zone==='domestic')return SHIP_DOMESTIC_FLAT;
+  const brackets = zone==='zone1'?SHIP_ZONE1:SHIP_ZONE2;
+  for(const b of brackets){if(weightG<=b.max)return b.price;}
+  return brackets[brackets.length-1].price;
+}
+function cartWeight(){
+  return cart.reduce((s,i)=>s+(i.custom?(i.wg||100):(CATS[i.catIdx].prods[i.prodIdx].wg||150))*i.qty,0);
+}
 function calcTotals(){
   const subtotal=cart.reduce((s,i)=>s+i.pr*i.qty,0);
   const country=(document.getElementById('chCountry')||{}).value||'CH';
-  const shipping = subtotal>=FREE_SHIP_THRESHOLD ? 0 : (country==='CH'?4.99:6.99);
-  return {subtotal,shipping,total:subtotal+shipping,country};
+  const zone=shipZone(country);
+  const weight=cartWeight();
+  const shipping = subtotal>=FREE_SHIP_THRESHOLD ? 0 : shipPriceForWeight(zone,weight);
+  return {subtotal,shipping,total:subtotal+shipping,country,zone,weight};
 }
 function renderOrderSummary(){
   const t=calcTotals();
@@ -738,8 +798,10 @@ function renderOrderSummary(){
       const nm = i.custom? i.nm : CATS[i.catIdx].prods[i.prodIdx].nm[lang];
       return `<div class="or"><span>${i.ic} ${nm}${i.qty>1?' × '+i.qty:''}${i.mat?' ('+i.mat+')':''}</span><span>${chf(i.pr*i.qty)}</span></div>`;
     }).join('')+
+    `<div class="or"><span>${I18N.weightNote[lang]}</span><span>~${t.weight.toFixed(0)} g</span></div>`+
     `<div class="or"><span>${I18N.shipping[lang]}</span><span>${t.shipping===0?I18N.free[lang]:chf(t.shipping)}</span></div>`+
     `<div class="or tot"><span>${I18N.cartTotal[lang]}</span><span>${chf(t.total)}</span></div>`;
+  if(document.getElementById('twintAmount'))updateTwintAmount();
   return t.shipping;
 }
 function openCheck(){
@@ -751,6 +813,8 @@ function openCheck(){
   document.getElementById('chCountry').value='CH';
   renderOrderSummary();
   renderPaypalArea();
+  renderTwintPanel();
+  switchPayTab('paypal');
   document.getElementById('checkModal').classList.add('open');
 }
 function closeCheck(){document.getElementById('checkModal').classList.remove('open');}
@@ -773,28 +837,39 @@ function validateAddress(){
   return f;
 }
 
+function switchPayTab(tab){
+  document.getElementById('tabPaypal').classList.toggle('active',tab==='paypal');
+  document.getElementById('tabCard').classList.toggle('active',tab==='card');
+  document.getElementById('tabTwint').classList.toggle('active',tab==='twint');
+  document.getElementById('payPanelPaypal').style.display=tab==='paypal'?'block':'none';
+  document.getElementById('payPanelCard').style.display=tab==='card'?'block':'none';
+  document.getElementById('payPanelTwint').style.display=tab==='twint'?'block':'none';
+}
+
 function loadPaypalSDK(cb){
   if(window.paypal){cb();return;}
   if(PAYPAL_CLIENT_ID==='YOUR_PAYPAL_CLIENT_ID')return;
   const s=document.createElement('script');
-  s.src='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CHF&components=buttons';
+  s.src='https://www.paypal.com/sdk/js?client-id='+PAYPAL_CLIENT_ID+'&currency=CHF&components=buttons&enable-funding=card';
   s.onload=cb;
   document.head.appendChild(s);
 }
 function renderPaypalArea(){
-  const wrap=document.getElementById('paypalWrap');
   if(PAYPAL_CLIENT_ID==='YOUR_PAYPAL_CLIENT_ID'){
-    wrap.innerHTML=`<div style="background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">⚠️ ${I18N.paypalSetupNeeded[lang]}</div>`;
+    const msg=`<div style="background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">⚠️ ${I18N.paypalSetupNeeded[lang]}</div>`;
+    document.getElementById('paypal-button-container').innerHTML=msg;
+    document.getElementById('card-button-container').innerHTML=msg;
     return;
   }
-  wrap.innerHTML='<div id="paypal-button-container"></div>';
   loadPaypalSDK(initPaypal);
+  if(window.paypal)initPaypal();
 }
 function initPaypal(){
   if(!window.paypal)return;
   document.getElementById('paypal-button-container').innerHTML='';
-  paypal.Buttons({
-    style:{color:'blue',shape:'rect',label:'pay'},
+  document.getElementById('card-button-container').innerHTML='';
+  const baseOpts={
+    style:{shape:'rect',label:'pay'},
     onClick:function(data,actions){
       const f=validateAddress();
       if(!f)return actions.reject();
@@ -804,23 +879,47 @@ function initPaypal(){
       const t=calcTotals();
       return actions.order.create({purchase_units:[{amount:{value:t.total.toFixed(2),currency_code:'CHF'}}]});
     },
-    onApprove:function(data,actions){
-      return actions.order.capture().then(function(){finalizeOrder(data.orderID);});
-    },
     onError:function(){
       document.getElementById('errMsg').textContent=I18N.errSend[lang];
     }
-  }).render('#paypal-button-container');
+  };
+  const ppBtn=paypal.Buttons(Object.assign({fundingSource:paypal.FUNDING.PAYPAL},baseOpts,{
+    onApprove:function(data,actions){return actions.order.capture().then(function(){finalizeOrder(data.orderID,'PayPal');});}
+  }));
+  if(ppBtn.isEligible())ppBtn.render('#paypal-button-container');
+  const cardBtn=paypal.Buttons(Object.assign({fundingSource:paypal.FUNDING.CARD},baseOpts,{
+    onApprove:function(data,actions){return actions.order.capture().then(function(){finalizeOrder(data.orderID,'Karte');});}
+  }));
+  if(cardBtn.isEligible())cardBtn.render('#card-button-container');
 }
 
-async function finalizeOrder(paypalOrderId){
+function renderTwintPanel(){
+  const el=document.getElementById('twintTarget');
+  if(TWINT_INFO==='YOUR_TWINT_NUMBER_OR_QR'){
+    el.textContent='⚠️ '+I18N.twintSetupNeeded[lang];
+  }else{
+    el.textContent=TWINT_INFO;
+  }
+  updateTwintAmount();
+}
+function updateTwintAmount(){
+  const t=calcTotals();
+  document.getElementById('twintAmount').textContent=chf(t.total);
+}
+function confirmTwint(){
+  const f=validateAddress();
+  if(!f)return;
+  finalizeOrder('TWINT (manuell zu prüfen)','TWINT');
+}
+
+async function finalizeOrder(paymentRef,method){
   const f=getAddressFields();
   const t=calcTotals();
   const countryLabel=((COUNTRIES.find(x=>x.code===f.countryCode)||{})[lang])||f.countryCode;
   const orderTxt=cart.map(i=>{
     const nm=i.custom?i.nm:CATS[i.catIdx].prods[i.prodIdx].nm.de;
     return `${i.ic} ${nm}${i.mat?' ('+i.mat+')':''}${i.wg?' ~'+i.wg.toFixed(0)+'g':''} × ${i.qty} = ${chf(i.pr*i.qty)}`;
-  }).join('\n')+`\nVersand (${countryLabel}) = ${t.shipping===0?'Kostenlos':chf(t.shipping)}\nGesamt = ${chf(t.total)}\nPayPal-Order-ID = ${paypalOrderId}`;
+  }).join('\n')+`\nGesamtgewicht = ~${t.weight.toFixed(0)} g\nVersand (${countryLabel}) = ${t.shipping===0?'Kostenlos':chf(t.shipping)}\nGesamt = ${chf(t.total)}\nZahlungsmethode = ${method}\nZahlungs-Referenz = ${paymentRef}`;
   const fd=new FormData();
   fd.append('_subject','🖨️ Neue print3D Bestellung von '+f.n);
   fd.append('_captcha','false');
@@ -829,13 +928,17 @@ async function finalizeOrder(paypalOrderId){
   fd.append('Adresse',f.st+', '+f.p+' '+f.c+', '+countryLabel);
   fd.append('Bestellung',orderTxt);
   fd.append('Gesamtbetrag',chf(t.total));
-  fd.append('PayPal-Order-ID',paypalOrderId);
+  fd.append('Zahlungsmethode',method);
+  fd.append('Zahlungs-Referenz',paymentRef);
   const cu=cart.find(i=>i.custom&&i.file);
   if(cu)fd.append('attachment',cu.file,cu.file.name);
   try{
     await fetch('https://formsubmit.co/matias.senn@edu.schule-wetzikon.ch',{method:'POST',body:fd});
   }catch(err){console.error('E-Mail-Versand fehlgeschlagen',err);}
   document.getElementById('checkFrm').style.display='none';
+  const okNote=document.getElementById('okNote');
+  if(method==='TWINT'){okNote.textContent=I18N.okNoteTwint[lang];okNote.style.display='block';}
+  else{okNote.style.display='none';}
   document.getElementById('checkOk').style.display='block';
   cart=[];renderCart();
 }
