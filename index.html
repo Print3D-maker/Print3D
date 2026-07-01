@@ -19,9 +19,9 @@ a{text-decoration:none;color:inherit}
 nav{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 5%;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--navbg);backdrop-filter:blur(12px);z-index:100}
 .logo{font-size:1.3rem;font-weight:700;letter-spacing:-.5px}.logo span{color:var(--accent)}
 .nav-links{display:flex;gap:2rem;font-size:.9rem;color:var(--muted)}.nav-links a:hover{color:var(--text)}
-.nav-right{display:flex;align-items:center;gap:.6rem}
-.icon-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s}.icon-btn:hover{border-color:var(--accent)}
-.lang-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0 .7rem;height:38px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700;letter-spacing:.5px;transition:border-color .2s}.lang-btn:hover{border-color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:.5rem}
+.icon-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:8px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s;flex-shrink:0}.icon-btn:hover{border-color:var(--accent)}
+.lang-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);width:38px;height:38px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:700;letter-spacing:.5px;transition:border-color .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}.lang-btn:hover{border-color:var(--accent)}
 .cart-btn{background:var(--accent);color:#000;padding:.5rem 1.2rem;border-radius:6px;font-size:.9rem;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;gap:.5rem}.cart-btn:hover{background:var(--accent2)}
 .cart-count{background:#000;color:var(--accent);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200}.overlay.open{display:block}
@@ -348,7 +348,7 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
   <div class="stitle" data-i18n="featTitle">Qualität trifft Kreativität</div>
   <div class="ssub" data-i18n="featSub">Jedes Produkt wird mit modernsten Druckern und hochwertigen Materialien hergestellt.</div>
   <div class="g3">
-    <div class="fc"><div class="fi">⚙️</div><h3 data-i18n="feat1T">Präzisionsdruck</h3><p data-i18n="feat1D">FDM & Resin-Drucker für gestochen scharfe Details und perfekte Maßhaltigkeit.</p></div>
+    <div class="fc"><div class="fi">⚙️</div><h3 data-i18n="feat1T">Präzisionsdruck</h3><p data-i18n="feat1D">Hochpräzise FDM-Drucker für scharfe Details und perfekte Maßhaltigkeit.</p></div>
     <div class="fc"><div class="fi">🎨</div><h3 data-i18n="feat2T">Individualisierbar</h3><p data-i18n="feat2D">Farbe, Größe, Material – fast alles anpassbar. Dein Wunsch, unser Druck.</p></div>
     <div class="fc"><div class="fi">📦</div><h3 data-i18n="feat3T">Schnelle Lieferung</h3><p data-i18n="feat3D">Sorgfältig verpackt und zuverlässig geliefert – in der Regel innerhalb 48 Stunden.</p></div>
   </div>
@@ -397,18 +397,18 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
   </div>
 </section>
 
-<!-- FAQ -->
-<section class="tessec">
-  <div class="stag2" data-i18n="faqTag">FAQ</div>
-  <div class="stitle" data-i18n="faqTitle">Häufige Fragen</div>
-  <div class="faq-list" id="faqList"></div>
-</section>
-
 <!-- CTA -->
 <section class="ctasec">
   <h2><span data-i18n="ctaTitleA">Bereit für dein</span><br><span data-i18n="ctaTitleB">Unikat?</span></h2>
   <p data-i18n="ctaP">Lade deine eigene STL-Datei hoch und lass uns deine Idee Wirklichkeit werden.</p>
   <button class="btnp" onclick="openCustom()" data-i18n="ctaBtn">🎨 Eigenes Produkt bestellen</button>
+</section>
+
+<!-- FAQ -->
+<section class="tessec">
+  <div class="stag2" data-i18n="faqTag">FAQ</div>
+  <div class="stitle" data-i18n="faqTitle">Häufige Fragen</div>
+  <div class="faq-list" id="faqList"></div>
 </section>
 
 <footer>
@@ -514,7 +514,7 @@ const I18N={
   featTitle:{de:'Qualität trifft Kreativität',en:'Quality meets creativity'},
   featSub:{de:'Jedes Produkt wird mit modernsten Druckern und hochwertigen Materialien hergestellt.',en:'Every product is made with state-of-the-art printers and high-quality materials.'},
   feat1T:{de:'Präzisionsdruck',en:'Precision printing'},
-  feat1D:{de:'FDM & Resin-Drucker für gestochen scharfe Details und perfekte Maßhaltigkeit.',en:'FDM & resin printers for razor-sharp detail and perfect dimensional accuracy.'},
+  feat1D:{de:'Hochpräzise FDM-Drucker für scharfe Details und perfekte Maßhaltigkeit.',en:'High-precision FDM printers for sharp details and perfect dimensional accuracy.'},
   feat2T:{de:'Individualisierbar',en:'Customizable'},
   feat2D:{de:'Farbe, Größe, Material – fast alles anpassbar. Dein Wunsch, unser Druck.',en:'Color, size, material – almost everything is adjustable. Your wish, our print.'},
   feat3T:{de:'Schnelle Lieferung',en:'Fast delivery'},
@@ -591,15 +591,14 @@ const CATS=[
 ];
 
 const MATS=[
-  {id:'PLA',em:'🟢',nm:'PLA',sh:{de:'Standard',en:'Standard'},dens:1.24,desc:{de:'Günstig, viele Farben. Ideal für Deko & Alltagsobjekte.',en:'Affordable, many colors. Ideal for decor & everyday objects.'},bars:[55,30,15,65]},
-  {id:'PETG',em:'🔵',nm:'PETG',sh:{de:'Robust',en:'Sturdy'},dens:1.27,desc:{de:'Stärker als PLA, hitzebeständiger. Für funktionale Teile.',en:'Stronger than PLA, more heat-resistant. For functional parts.'},bars:[72,55,25,60]},
-  {id:'ABS',em:'⚫',nm:'ABS',sh:{de:'Technisch',en:'Technical'},dens:1.05,desc:{de:'Sehr robust & kratzfest. Für technische & mechanische Teile.',en:'Very sturdy & scratch-resistant. For technical & mechanical parts.'},bars:[85,80,20,55]},
-  {id:'TPU',em:'🟡',nm:'TPU',sh:{de:'Flexibel',en:'Flexible'},dens:1.21,desc:{de:'Gummiartig & weich. Für Hüllen, Griffe & biegsame Teile.',en:'Rubber-like & soft. For cases, grips & flexible parts.'},bars:[50,40,95,50]},
-  {id:'Resin',em:'🟣',nm:'Resin',sh:{de:'Hochdetail',en:'High-detail'},dens:1.10,desc:{de:'Extrem präzise & glatt. Für Figuren & Schmuck.',en:'Extremely precise & smooth. For figures & jewelry.'},bars:[45,35,10,98]},
-  {id:'Nylon',em:'⚪',nm:'Nylon',sh:{de:'Leicht & Stark',en:'Light & strong'},dens:1.14,desc:{de:'Hohe Festigkeit, geringes Gewicht. Für Zahnräder & Clips.',en:'High strength, low weight. For gears & clips.'},bars:[90,70,40,60]},
+  {id:'PLA', em:'🟢',nm:'PLA', sh:{de:'Standard',      en:'Standard'},   dens:1.24,p100g:5.00,desc:{de:'Günstig, viele Farben. Ideal für Deko & Alltagsobjekte.',     en:'Affordable, many colors. Ideal for decor & everyday objects.'},  bars:[55,30,15,65]},
+  {id:'PETG',em:'🔵',nm:'PETG',sh:{de:'Robust',         en:'Sturdy'},     dens:1.27,p100g:6.50,desc:{de:'Stärker als PLA, hitzebeständiger. Für funktionale Teile.',    en:'Stronger than PLA, more heat-resistant. For functional parts.'}, bars:[72,55,25,60]},
+  {id:'ABS', em:'⚫',nm:'ABS', sh:{de:'Technisch',      en:'Technical'},  dens:1.05,p100g:6.00,desc:{de:'Sehr robust & kratzfest. Für technische & mechanische Teile.', en:'Very sturdy & scratch-resistant. For technical & mechanical parts.'},bars:[85,80,20,55]},
+  {id:'TPU', em:'🟡',nm:'TPU', sh:{de:'Flexibel',       en:'Flexible'},   dens:1.21,p100g:8.00,desc:{de:'Gummiartig & weich. Für Hüllen, Griffe & biegsame Teile.',    en:'Rubber-like & soft. For cases, grips & flexible parts.'},        bars:[50,40,95,50]},
+  {id:'Nylon',em:'⚪',nm:'Nylon',sh:{de:'Leicht & Stark',en:'Light & strong'},dens:1.14,p100g:9.00,desc:{de:'Hohe Festigkeit, geringes Gewicht. Für Zahnräder & Clips.',en:'High strength, low weight. For gears & clips.'},              bars:[90,70,40,60]},
 ];
 const BARLABELS={de:['Stärke','Hitze','Flexibel','Detail'],en:['Strength','Heat','Flex','Detail']};
-const INFILL=0.20, P100G=5;
+const INFILL=0.20;
 const FREE_SHIP_THRESHOLD=50; // ab diesem Bestellwert (CHF) ist der Versand kostenlos
 const PAYPAL_CLIENT_ID='YOUR_PAYPAL_CLIENT_ID'; // <-- hier deine echte PayPal Client-ID einfügen (developer.paypal.com → Apps & Credentials)
 const TWINT_INFO='YOUR_TWINT_NUMBER_OR_QR'; // <-- hier deine TWINT-Telefonnummer eintragen, z.B. '+41 79 123 45 67'
@@ -847,10 +846,10 @@ function updateEst(){
   if(!stlVol||!chosenMat)return;
   const mat=MATS.find(m=>m.id===chosenMat);
   const wg=(stlVol/1000)*mat.dens*INFILL;
-  const pr=Math.max(2,(wg/100)*P100G);
+  const pr=Math.max(2,(wg/100)*mat.p100g);
   document.getElementById('estBox').style.display='flex';
   document.getElementById('estW').textContent='~'+wg.toFixed(1)+' g';
-  document.getElementById('estP').textContent=chf(pr);
+  document.getElementById('estP').textContent=chf(pr)+' ('+mat.nm+', '+chf(mat.p100g)+'/100g)';
   const btn=document.getElementById('addCBtn');
   btn.disabled=false;btn.dataset.wg=wg;btn.dataset.pr=pr;
 }
