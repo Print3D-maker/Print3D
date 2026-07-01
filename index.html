@@ -8,7 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
+
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0a0a0a;--bg2:#111;--bg3:#161616;--text:#f0f0f0;--muted:#888;--border:#222;--accent:#00d4ff;--accent2:#0099bb;--card:#141414;--surface:#1a1a1a;--surface2:#0a0a0a;--surface3:#0d1f24;--navbg:rgba(10,10,10,.96);--disabled-bg:#333;--disabled-text:#666}
 [data-theme="light"]{--bg:#f6f7f8;--bg2:#ffffff;--bg3:#eef0f2;--text:#14171a;--muted:#62666c;--border:#e1e3e6;--accent:#0099bb;--accent2:#007a93;--card:#ffffff;--surface:#eef0f2;--surface2:#f0f4f5;--surface3:#e3f6fa;--navbg:rgba(255,255,255,.92);--disabled-bg:#e4e4e4;--disabled-text:#9a9a9a}
@@ -121,6 +123,26 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 .paytab:hover{border-color:var(--accent)}
 .paytab.active{border-color:var(--accent);color:var(--accent);background:var(--surface3)}
 .paypanel{min-height:60px}
+/* STL PREVIEW */
+.stl-preview-wrap{position:relative;border-radius:12px;overflow:hidden;margin:.7rem 0;background:var(--surface);border:1px solid var(--border)}
+#stlCanvas{width:100%;height:220px;display:block}
+.stl-prev-info{position:absolute;bottom:.5rem;left:.6rem;font-size:.68rem;color:var(--muted);pointer-events:none}
+.stl-prev-hint{position:absolute;top:.5rem;right:.6rem;font-size:.68rem;color:var(--muted);pointer-events:none}
+/* FAQ */
+.faq-list{margin-top:1.5rem}
+.faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:.6rem;overflow:hidden}
+.faq-q{width:100%;background:var(--card);border:none;color:var(--text);text-align:left;padding:.9rem 1.1rem;font-size:.9rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit}.faq-q:hover{background:var(--surface)}
+.faq-icon{color:var(--accent);font-size:1.1rem;transition:transform .25s;flex-shrink:0}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;font-size:.85rem;color:var(--muted);padding:0 1.1rem;line-height:1.65}
+.faq-item.open .faq-a{max-height:200px;padding:.7rem 1.1rem 1rem}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+/* SUSTAINABILITY */
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.85rem;margin-top:1.6rem}
+.eco-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
+.eco-ic{font-size:1.8rem;margin-bottom:.6rem}.eco-card h3{font-size:.88rem;font-weight:600;margin-bottom:.25rem;color:var(--accent)}.eco-card p{font-size:.78rem;color:var(--muted)}
+/* FOOTER PAYMENT ICONS */
+.pay-icons{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-top:.5rem}
+.pay-icon{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:.18rem .45rem;font-size:.72rem;color:var(--muted);font-weight:700;letter-spacing:.3px}
 @media (max-width:640px){.nav-links{display:none}.mat-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
@@ -177,6 +199,11 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
       <div class="stl-ok-txt"><h4 id="stlNm"></h4><p id="stlSz"></p></div>
       <button class="stl-rm" onclick="clearSTL()">✕</button>
     </div>
+    <div class="stl-preview-wrap" id="stlPreviewWrap" style="display:none">
+      <canvas id="stlCanvas"></canvas>
+      <div class="stl-prev-hint">🖱️ Drehen</div>
+      <div class="stl-prev-info" id="stlPrevInfo"></div>
+    </div>
 
     <div class="stag"><span data-i18n="step2Label">2 · Material wählen</span> <span style="color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0" data-i18n="step2Hint">(Maus drüber für Details)</span></div>
     <div class="mat-grid" id="matGrid"></div>
@@ -215,16 +242,11 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
       <div class="stag" data-i18n="paymentLabel">Zahlung</div>
       <div class="paytabs">
         <button class="paytab active" id="tabPaypal" onclick="switchPayTab('paypal')">🅿️ PayPal</button>
-        <button class="paytab" id="tabCard" onclick="switchPayTab('card')"><span data-i18n="payCardLabel">💳 Karte</span></button>
         <button class="paytab" id="tabTwint" onclick="switchPayTab('twint')">📱 TWINT</button>
       </div>
       <div id="payPanelPaypal" class="paypanel">
         <div class="msub" style="margin-bottom:.7rem" data-i18n="paypalHint">Klick auf den PayPal-Button, um deine Adresse zu prüfen und sicher zu bezahlen.</div>
         <div id="paypal-button-container"></div>
-      </div>
-      <div id="payPanelCard" class="paypanel" style="display:none">
-        <div class="msub" style="margin-bottom:.7rem" data-i18n="cardHint">Sichere Kartenzahlung (Visa, Mastercard, Amex) – abgewickelt über PayPal, ohne eigenes PayPal-Konto nötig.</div>
-        <div id="card-button-container"></div>
       </div>
       <div id="payPanelTwint" class="paypanel" style="display:none">
         <div class="msub" style="margin-bottom:.7rem" data-i18n="twintHint">Sende den Betrag per TWINT, dann bestätige unten – wir prüfen den Zahlungseingang von Hand.</div>
@@ -362,6 +384,26 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
   </div>
 </section>
 
+<!-- NACHHALTIGKEIT -->
+<section>
+  <div class="stag2" data-i18n="ecoTag">Nachhaltigkeit</div>
+  <div class="stitle" data-i18n="ecoTitle">Lokal, bewusst, nachhaltig</div>
+  <div class="ssub" data-i18n="ecoSub">Jedes Produkt wird erst gedruckt, wenn du es bestellst – kein Lager, kein Wegwerfen.</div>
+  <div class="eco-grid">
+    <div class="eco-card"><div class="eco-ic">📍</div><h3 data-i18n="eco1T">Lokal produziert</h3><p data-i18n="eco1D">Alles wird in der Schweiz gedruckt – kurze Wege, keine Überseeverschiffung.</p></div>
+    <div class="eco-card"><div class="eco-ic">🎯</div><h3 data-i18n="eco2T">Print-on-Demand</h3><p data-i18n="eco2D">Kein Lager, keine Überproduktion. Gedruckt wird nur, was wirklich bestellt wird.</p></div>
+    <div class="eco-card"><div class="eco-ic">♻️</div><h3 data-i18n="eco3T">Recyclingfähig</h3><p data-i18n="eco3D">PLA ist biobasiert und kompostierbar – das umweltfreundlichste 3D-Druckmaterial.</p></div>
+    <div class="eco-card"><div class="eco-ic">📦</div><h3 data-i18n="eco4T">Minimale Verpackung</h3><p data-i18n="eco4D">Wir versenden mit so wenig Verpackungsmaterial wie möglich – kein Plastikmüll.</p></div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="tessec">
+  <div class="stag2" data-i18n="faqTag">FAQ</div>
+  <div class="stitle" data-i18n="faqTitle">Häufige Fragen</div>
+  <div class="faq-list" id="faqList"></div>
+</section>
+
 <!-- CTA -->
 <section class="ctasec">
   <h2><span data-i18n="ctaTitleA">Bereit für dein</span><br><span data-i18n="ctaTitleB">Unikat?</span></h2>
@@ -370,7 +412,15 @@ footer{border-top:1px solid var(--border);padding:1.7rem 5%;display:flex;justify
 </section>
 
 <footer>
-  <div class="logo">print<span style="color:var(--accent)">3D</span></div>
+  <div>
+    <div class="logo" style="margin-bottom:.4rem">print<span style="color:var(--accent)">3D</span></div>
+    <div class="pay-icons">
+      <span class="pay-icon">PayPal</span>
+      <span class="pay-icon">TWINT</span>
+      <span class="pay-icon">💳 Karte</span>
+      <span class="pay-icon">🔒 SSL</span>
+    </div>
+  </div>
   <div class="flinks">
     <a href="#" onclick="openImpressum();return false" data-i18n="footImpressum">Impressum</a>
     <a href="#" onclick="openDatenschutz();return false" data-i18n="footPrivacy">Datenschutz</a>
@@ -494,6 +544,20 @@ const I18N={
   footPrivacy:{de:'Datenschutz',en:'Privacy'},
   footContact:{de:'Kontakt',en:'Contact'},
   footInsta:{de:'Instagram (folgt bald)',en:'Instagram (coming soon)'},
+  ecoTag:{de:'Nachhaltigkeit',en:'Sustainability'},
+  ecoTitle:{de:'Lokal, bewusst, nachhaltig',en:'Local, conscious, sustainable'},
+  ecoSub:{de:'Jedes Produkt wird erst gedruckt, wenn du es bestellst – kein Lager, kein Wegwerfen.',en:'Every product is printed only when you order it – no warehouse, no waste.'},
+  eco1T:{de:'Lokal produziert',en:'Locally made'},
+  eco1D:{de:'Alles wird in der Schweiz gedruckt – kurze Wege, keine Überseeverschiffung.',en:'Everything is printed in Switzerland – short distances, no overseas shipping.'},
+  eco2T:{de:'Print-on-Demand',en:'Print-on-Demand'},
+  eco2D:{de:'Kein Lager, keine Überproduktion. Gedruckt wird nur, was wirklich bestellt wird.',en:'No warehouse, no overproduction. We only print what is actually ordered.'},
+  eco3T:{de:'Recyclingfähig',en:'Recyclable'},
+  eco3D:{de:'PLA ist biobasiert und kompostierbar – das umweltfreundlichste 3D-Druckmaterial.',en:'PLA is bio-based and compostable – the most eco-friendly 3D printing material.'},
+  eco4T:{de:'Minimale Verpackung',en:'Minimal packaging'},
+  eco4D:{de:'Wir versenden mit so wenig Verpackungsmaterial wie möglich – kein Plastikmüll.',en:'We ship with as little packaging as possible – no plastic waste.'},
+  faqTag:{de:'FAQ',en:'FAQ'},
+  faqTitle:{de:'Häufige Fragen',en:'Frequently asked questions'},
+  stlRotateHint:{de:'🖱️ Drehen',en:'🖱️ Rotate'},
   errAllFields:{de:'❌ Bitte alle Felder ausfüllen.',en:'❌ Please fill in all fields.'},
   errEmail:{de:'❌ Bitte eine gültige E-Mail-Adresse eingeben.',en:'❌ Please enter a valid email address.'},
   errSend:{de:'❌ Fehler beim Senden. Bitte nochmal versuchen.',en:'❌ Error while sending. Please try again.'},
@@ -585,6 +649,7 @@ function applyLang(){
   rebuildCatCards();
   rebuildMatGrid();
   rebuildCountrySelect();
+  buildFAQ();
   renderCart();
   if(document.getElementById('catModal').classList.contains('open') && currentCatId) openCat(currentCatId);
   if(document.getElementById('allProdModal').classList.contains('open')) openAllProds();
@@ -616,9 +681,28 @@ function rebuildCountrySelect(){
   sel.innerHTML=COUNTRIES.map(c=>`<option value="${c.code}">${c[lang]}</option>`).join('');
   sel.value=prevVal;
 }
+const FAQS=[
+  {q:{de:'Wie lange dauert die Lieferung?',en:'How long does delivery take?'},a:{de:'In der Schweiz in der Regel 2–4 Werktage. Ins Ausland 5–10 Werktage, je nach Land.',en:'Within Switzerland usually 2–4 business days. Internationally 5–10 business days depending on the destination.'}},
+  {q:{de:'In welchen Farben kann ich bestellen?',en:'What colors can I order in?'},a:{de:'Wir führen über 20 Farben in PLA und PETG. Schreib uns einfach deine Wunschfarbe in den Bestellnotizen oder per E-Mail.',en:'We stock over 20 colors in PLA and PETG. Just mention your preferred color in the order notes or by email.'}},
+  {q:{de:'Kann ich eine eigene STL-Datei einschicken?',en:'Can I submit my own STL file?'},a:{de:'Ja! Über den Custom-Bereich kannst du deine STL-Datei direkt hochladen. Wir prüfen die Druckbarkeit und melden uns bei Problemen.',en:'Yes! Use the custom order section to upload your STL file directly. We check printability and will contact you if there are any issues.'}},
+  {q:{de:'Sind die Produkte wasserdicht?',en:'Are the products waterproof?'},a:{de:'Standardmässig nicht vollständig. FDM-Drucke sind wasserabweisend, aber nicht wasserdicht. Für Außeneinsatz empfehlen wir ABS oder PETG.',en:'Not fully by default. FDM prints are water-resistant but not waterproof. For outdoor use we recommend ABS or PETG.'}},
+  {q:{de:'Kann ich eine Bestellung stornieren?',en:'Can I cancel an order?'},a:{de:'Stornierungen sind möglich, solange der Druck noch nicht gestartet wurde. Bitte möglichst schnell per E-Mail melden.',en:'Cancellations are possible as long as printing hasn\'t started yet. Please contact us as soon as possible by email.'}},
+  {q:{de:'Gibt es einen Rabatt bei größeren Mengen?',en:'Is there a discount for larger quantities?'},a:{de:'Ja, ab 5 gleichen Stück gewähren wir 10% Rabatt. Schreib uns einfach an.',en:'Yes, for 5 or more identical pieces we offer a 10% discount. Just reach out to us by email.'}},
+];
+function buildFAQ(){
+  document.getElementById('faqList').innerHTML=FAQS.map((f,i)=>`
+    <div class="faq-item" id="faq${i}">
+      <button class="faq-q" onclick="toggleFAQ(${i})">
+        <span>${f.q[lang]}</span><span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">${f.a[lang]}</div>
+    </div>`).join('');
+}
+function toggleFAQ(i){document.getElementById('faq'+i).classList.toggle('open');}
 (function init(){
   rebuildCatCards();
   rebuildMatGrid();
+  buildFAQ();
 })();
 
 function addRegular(ci,pi){
@@ -693,10 +777,13 @@ function openCustom(){
   document.getElementById('stlIn').value='';
   document.getElementById('stlZone').style.display='block';
   document.getElementById('stlOk').style.display='none';
+  document.getElementById('stlPreviewWrap').style.display='none';
   document.getElementById('estBox').style.display='none';
   document.getElementById('addCBtn').disabled=true;
+  if(stlAnimId){cancelAnimationFrame(stlAnimId);stlAnimId=null;}
   rebuildMatGrid();
   document.getElementById('customModal').classList.add('open');
+  setTimeout(()=>{if(typeof THREE!=='undefined')initSTLViewer();},100);
 }
 function closeCustom(){document.getElementById('customModal').classList.remove('open');}
 
@@ -709,7 +796,9 @@ async function handleSTL(f){
   document.getElementById('stlNm').textContent=f.name;
   document.getElementById('stlSz').textContent=(f.size/1024).toFixed(1)+' KB';
   document.getElementById('stlOk').style.display='flex';
-  stlVol=parseSTL(await f.arrayBuffer());
+  const buf=await f.arrayBuffer();
+  stlVol=parseSTL(buf);
+  if(typeof THREE!=='undefined')renderSTLPreview(buf);
   updateEst();
 }
 function clearSTL(){
@@ -719,6 +808,9 @@ function clearSTL(){
   document.getElementById('stlOk').style.display='none';
   document.getElementById('estBox').style.display='none';
   document.getElementById('addCBtn').disabled=true;
+  document.getElementById('stlPreviewWrap').style.display='none';
+  if(stlAnimId){cancelAnimationFrame(stlAnimId);stlAnimId=null;}
+  if(stlMesh&&stlScene){stlScene.remove(stlMesh);stlMesh=null;}
 }
 function parseSTL(buf){
   const v=new DataView(buf);
@@ -837,13 +929,70 @@ function validateAddress(){
   return f;
 }
 
+// ── FAQ ────────────────────────────────────────────────────────
 function switchPayTab(tab){
   document.getElementById('tabPaypal').classList.toggle('active',tab==='paypal');
-  document.getElementById('tabCard').classList.toggle('active',tab==='card');
   document.getElementById('tabTwint').classList.toggle('active',tab==='twint');
   document.getElementById('payPanelPaypal').style.display=tab==='paypal'?'block':'none';
-  document.getElementById('payPanelCard').style.display=tab==='card'?'block':'none';
   document.getElementById('payPanelTwint').style.display=tab==='twint'?'block':'none';
+}
+
+// ── STL 3D PREVIEW ─────────────────────────────────────────────
+let stlRenderer=null,stlScene=null,stlCamera=null,stlMesh=null,stlAnimId=null;
+let isMouseDown=false,lastMX=0,lastMY=0;
+function initSTLViewer(){
+  const canvas=document.getElementById('stlCanvas');
+  if(stlRenderer){stlRenderer.dispose();}
+  stlScene=new THREE.Scene();
+  stlCamera=new THREE.PerspectiveCamera(45,canvas.clientWidth/220,0.1,1000);
+  stlRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  stlRenderer.setSize(canvas.clientWidth,220);
+  stlRenderer.setPixelRatio(window.devicePixelRatio||1);
+  stlRenderer.setClearColor(0x000000,0);
+  stlScene.add(new THREE.AmbientLight(0xffffff,.6));
+  const dl=new THREE.DirectionalLight(0x00d4ff,.8);dl.position.set(1,2,2);stlScene.add(dl);
+  const dl2=new THREE.DirectionalLight(0xffffff,.3);dl2.position.set(-1,-1,-1);stlScene.add(dl2);
+  canvas.onmousedown=e=>{isMouseDown=true;lastMX=e.clientX;lastMY=e.clientY};
+  canvas.onmousemove=e=>{if(!isMouseDown||!stlMesh)return;const dx=e.clientX-lastMX,dy=e.clientY-lastMY;stlMesh.rotation.y+=dx*.01;stlMesh.rotation.x+=dy*.01;lastMX=e.clientX;lastMY=e.clientY};
+  canvas.onmouseup=()=>isMouseDown=false;canvas.onmouseleave=()=>isMouseDown=false;
+  canvas.ontouchstart=e=>{lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY};
+  canvas.ontouchmove=e=>{if(!stlMesh)return;const dx=e.touches[0].clientX-lastMX,dy=e.touches[0].clientY-lastMY;stlMesh.rotation.y+=dx*.01;stlMesh.rotation.x+=dy*.01;lastMX=e.touches[0].clientX;lastMY=e.touches[0].clientY};
+}
+function renderSTLPreview(buf){
+  if(!stlScene)initSTLViewer();
+  if(stlMesh){stlScene.remove(stlMesh);stlMesh.geometry.dispose();}
+  if(stlAnimId)cancelAnimationFrame(stlAnimId);
+  // parse binary STL → BufferGeometry
+  const dv=new DataView(buf);
+  const n=dv.getUint32(80,true);
+  const pos=new Float32Array(n*9);
+  for(let i=0;i<n;i++){
+    const o=84+i*50;
+    for(let v=0;v<3;v++){
+      pos[i*9+v*3]  =dv.getFloat32(o+12+v*12,true);
+      pos[i*9+v*3+1]=dv.getFloat32(o+12+v*12+4,true);
+      pos[i*9+v*3+2]=dv.getFloat32(o+12+v*12+8,true);
+    }
+  }
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.computeVertexNormals();
+  geo.center();
+  const box=new THREE.Box3().setFromBufferAttribute(geo.attributes.position);
+  const size=box.getSize(new THREE.Vector3());
+  const maxD=Math.max(size.x,size.y,size.z);
+  const scale=4/maxD;
+  const mat=new THREE.MeshPhongMaterial({color:0x00d4ff,specular:0x111111,shininess:60,wireframe:false});
+  stlMesh=new THREE.Mesh(geo,mat);
+  stlMesh.scale.set(scale,scale,scale);
+  stlScene.add(stlMesh);
+  stlCamera.position.set(0,0,8);
+  stlCamera.lookAt(0,0,0);
+  const dim=`${size.x.toFixed(0)}×${size.y.toFixed(0)}×${size.z.toFixed(0)} mm`;
+  document.getElementById('stlPrevInfo').textContent=dim;
+  document.getElementById('stlPreviewWrap').style.display='block';
+  function animate(){stlAnimId=requestAnimationFrame(animate);if(!isMouseDown&&stlMesh)stlMesh.rotation.y+=.005;stlRenderer.render(stlScene,stlCamera);}
+  animate();
 }
 
 function loadPaypalSDK(cb){
@@ -855,10 +1004,9 @@ function loadPaypalSDK(cb){
   document.head.appendChild(s);
 }
 function renderPaypalArea(){
+  const wrap=document.getElementById('paypal-button-container');
   if(PAYPAL_CLIENT_ID==='YOUR_PAYPAL_CLIENT_ID'){
-    const msg=`<div style="background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">⚠️ ${I18N.paypalSetupNeeded[lang]}</div>`;
-    document.getElementById('paypal-button-container').innerHTML=msg;
-    document.getElementById('card-button-container').innerHTML=msg;
+    wrap.innerHTML=`<div style="background:var(--surface2);border:1px dashed var(--accent);border-radius:10px;padding:.9rem 1rem;font-size:.82rem;color:var(--muted)">⚠️ ${I18N.paypalSetupNeeded[lang]}</div>`;
     return;
   }
   loadPaypalSDK(initPaypal);
@@ -867,30 +1015,18 @@ function renderPaypalArea(){
 function initPaypal(){
   if(!window.paypal)return;
   document.getElementById('paypal-button-container').innerHTML='';
-  document.getElementById('card-button-container').innerHTML='';
-  const baseOpts={
+  paypal.Buttons({
     style:{shape:'rect',label:'pay'},
     onClick:function(data,actions){
-      const f=validateAddress();
-      if(!f)return actions.reject();
-      return actions.resolve();
+      const f=validateAddress();if(!f)return actions.reject();return actions.resolve();
     },
     createOrder:function(data,actions){
       const t=calcTotals();
       return actions.order.create({purchase_units:[{amount:{value:t.total.toFixed(2),currency_code:'CHF'}}]});
     },
-    onError:function(){
-      document.getElementById('errMsg').textContent=I18N.errSend[lang];
-    }
-  };
-  const ppBtn=paypal.Buttons(Object.assign({fundingSource:paypal.FUNDING.PAYPAL},baseOpts,{
-    onApprove:function(data,actions){return actions.order.capture().then(function(){finalizeOrder(data.orderID,'PayPal');});}
-  }));
-  if(ppBtn.isEligible())ppBtn.render('#paypal-button-container');
-  const cardBtn=paypal.Buttons(Object.assign({fundingSource:paypal.FUNDING.CARD},baseOpts,{
-    onApprove:function(data,actions){return actions.order.capture().then(function(){finalizeOrder(data.orderID,'Karte');});}
-  }));
-  if(cardBtn.isEligible())cardBtn.render('#card-button-container');
+    onApprove:function(data,actions){return actions.order.capture().then(function(){finalizeOrder(data.orderID,'PayPal');});},
+    onError:function(){document.getElementById('errMsg').textContent=I18N.errSend[lang];}
+  }).render('#paypal-button-container');
 }
 
 function renderTwintPanel(){
